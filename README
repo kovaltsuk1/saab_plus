@@ -1,0 +1,8 @@
+INSTRUCTION to run SAAB+
+
+Input file:
+	fasta file
+
+Running the pipeline:
+	struct_filtering.py - running anarci parsing to filter out 
+			      structurally flawed antibody sequences
