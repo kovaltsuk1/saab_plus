@@ -1,3 +1,8 @@
+import logging
+logging.basicConfig(filename='saab_plus.log', level=logging.INFO,
+                     format="%(asctime)-15s %(levelname)s %(message)s",
+                     datefmt='%Y-%m-%d %H:%M:%S')
+
 import pandas as pd
 import os, sys
 from argparse import ArgumentParser
@@ -7,11 +12,7 @@ from Bio import SeqIO
 from collections import Counter
 from RunSAAB import RunSaab
 from code.apply_ess_cutoff import ApplyESS
-import logging
-
-logging.basicConfig(filename='saab_plus.log', level=logging.INFO,
-                     format="%(asctime)-15s %(levelname)s %(message)s",
-                     datefmt='%Y-%m-%d %H:%M:%S')
+from run_diagnostics import Diagnostics 
 
 class Filtering(object):
     """
@@ -25,6 +26,29 @@ class Filtering(object):
         self.output_name = arguments["output_name"]
         self.output_dir = arguments["output_dir"]
         print "SAAB plus log is found in saab_plus.log"
+        
+        if not self.pass_diagnostics():
+            raise AssertionError("""
+            Some saab_plus packages are missing
+            Please python run_diagnostics.py to see details
+                                 """)
+
+    def check_diagnostics_log(self):
+        errors = ["ERROR" in line for line in open("diagnostics.log","r") ]
+        if not any(errors) and len(errors) > 0:
+            return True
+        return False
+
+    def pass_diagnostics(self):
+        
+        if os.path.isfile("diagnostics.log"):
+            #return self.check_diagnostics_log()
+            os.remove("diagnostics.log")
+        diagnostics = Diagnostics()
+        diagnostics()
+        if not os.path.isfile("diagnostics.log"):
+            raise AssertionError("diagnostics.log was not created!?")
+        return self.check_diagnostics_log()
 
     def unique_aa(self):
         "reading fasta and converting to python dict"
@@ -39,7 +63,7 @@ class Filtering(object):
 
     def run(self):
         # Starting anarci parsing
-        print "\n\t\tInitiating anarci parsing" 
+        print "\n\tInitiating anarci parsing" 
         logging.info("\tStarting ANARCI parsing\n")
         anarci_parsing = Main(input_file = self.gziped, 
                              ncpu = self.ncores, 
