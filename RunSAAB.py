@@ -78,7 +78,7 @@ class RunSaab(object):
                 self.currently_analysed += 1
             logging.info( returnProgress(float(self.currently_analysed) / total_dataunit_size)) 
             pool = mp.Pool(processes=ncpu)
-            results = [ pool.apply_async(align_single_sequence, args = (data_for_saab[i::ncpu], self.strucs, i, \
+            results = [ pool.apply_async(align_single_sequence, args = (data_for_saab[i::ncpu], self.strucs,\
                                                                         self.chain )) for i in xrange(ncpu) ]
             pool.close()
             self.writing_output(results)

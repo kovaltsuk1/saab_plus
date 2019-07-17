@@ -24,7 +24,7 @@ fread_db = join(where_i_am, "../../data/fread_db/db_CDRH3")
 template_db = join(where_i_am, "../../data/structures/IMGT/")
 
 #Where the structures of the PDBs are stored ( for FREAD comparisons.)
-structures_location = join(where_i_am,'../../data/structures/IMGT')
+#structures_location = join(where_i_am,'../../data/structures/IMGT')
 
 # pdb_length 
 pdb_length_location = join(where_i_am, '../../data/pdb_length/pdb_lengths.pkl')

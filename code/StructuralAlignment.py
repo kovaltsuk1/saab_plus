@@ -72,15 +72,17 @@ def get_best_cdr_match( cdrs , fread_template, chain):
     results= { formatDict[chain]["CDR3"]:fread_results[maxESSminCA][1]["str"] }
     return results, essScore
 	
-#given a numbered anarci sequence and reference structures, get the best structural hits.
-def align_single_sequence(queries, structures, index, chain):
-    # collecting outputs here
+def align_single_sequence(queries, structures, chain):
+    """
+    Function that annotates anarci numbered sequences
+    with structural information.
+    """
     output_dict = {}
     for query in queries:
         fread_results = False
-        #Collect canonical CDRs here
         can = {}
-        #Get best full-sequence match.
+
+        #Get best framework pdb_template
         full_results = get_best_match(query[1],structures)
         CDRSequences = extract_cdrs(query[1][0])
         CDR3Sequence = CDRSequences.get("H3", None)

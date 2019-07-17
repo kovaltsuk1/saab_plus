@@ -1,8 +1,3 @@
-import cPickle as pickle
-import csv
-import sys, os,json
-import shutil
-import multiprocessing as mp
 
 def oas_output_parser(numbered):
     saab_input = dict()
