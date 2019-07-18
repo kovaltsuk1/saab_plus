@@ -46,12 +46,14 @@ description="""
                 Canon - Canonical Classes Clusters
            Redundancy - Number of Proiten_Seq copies in the
                         input fasta file
-            Framework - PDB template used for CDR-H3 
+            Framework - PDB template used in CDR-H3 
                         structure prediction
               CDRHSeq - Sequence of CDR-H3 loop
-                  ESS - Score for predicted CDR-H3 template
+                  ESS - FREAD Score for the predicted 
+                        CDR-H3 structure
 StructurallyAnnotated - Sequences, whose CDR-H3 structure
-                        predictions passed quality control
+                        predictions scores were above 
+                        the quality threshold
 -------------------------------------------------------
 """
 
@@ -169,7 +171,7 @@ def initArgParser():
     group.add_argument('-s', action='store', dest='species', default="human",
                         help="Species information. Default: human",
                         choices= ["human", "mouse", "rhesus", "alpaca"])
-    group.add_argument('-n', action='store', dest='ncores', default=16, type=int,
+    group.add_argument('-n', action='store', dest='ncores', default=4, type=int,
                         help="Number of CPU cores to use")
     group.add_argument("-c", action="store", dest="chain", default="H",
                         help="Antibody chain information. Currently only H (heavy) is supported ")
