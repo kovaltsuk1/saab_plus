@@ -24,7 +24,7 @@ To check if installation was successful, simply run
 ```
 SAAB_PLUS_DIAG
 ```
-This script generates a file __diagnostics.log__
+This script generates a file __diagnostics.log__.  
 If installation was successful, the diagnostics.log should look like:
 ```
 2019-07-18 16:21:55,780 INFO 	Writing DIAGNOSTICS log
@@ -43,3 +43,28 @@ If installation was successful, the diagnostics.log should look like:
 2019-07-18 16:21:56,658 INFO  Directory with numbered PDB frameworks: OK
 ```
 
+### Running a test example
+SAAB+ takes antibody sequences in the fasta format as the input. e.g.
+>&gt;seq1  
+>SLRLSCAASGFTFSGHWMYWVRQAPGKGLVWVARINND.....  
+>&gt;seq2  
+>SLRLSCAASGFTFRSYWMSWVRQAPGRGLEWIARIND......
+
+The EXAMPLE folder contains a test fasta file.
+To run SAAB+ pipeline on ten CPU cores, 
+```
+SAAB_PLUS -f Fasta_example.fa -n 10
+```
+### Interpreting SAAB+ outputs
+SAAB+ returns a zipped DataFrame file.
+```
+          Protein_Seq - Full antibody amino acid sequences. Only sequences that passed anarci structural viability assessment are retained.  
+                H3pdb - CDR-H3 structure that was predicted by FREAD  
+                Canon - SCALOP predicted non-CDR-H3 canonical classes  
+           Redundancy - Number of Proiten_Seq copies in the input fasta file  
+            Framework - PDB structure that was used in CDR-H3 structure prediction  
+              CDRHSeq - Sequence of CDR-H3 loop  
+                  ESS - FREAD score for the predicted CDR-H3 structure  
+StructurallyAnnotated - Sequnces, whose FREAD CDR-H3 structure prediction scores were above the quality threshold
+      
+```
