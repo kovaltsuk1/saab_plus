@@ -16,9 +16,9 @@ SAAB+ comes with **FREAD** package, however, **anarci** and **scallop** are not 
 
 ### Installing
 To install SAAB+, run
-'''
+```
 python setup.py install --user
-'''
+```
 ## Checking installation
 To chec
 
