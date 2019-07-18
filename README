@@ -5,6 +5,10 @@ to map non-CDR-H3 and CDR-H3 loop sequence to repersentative structures.
 ## Getting Started
 Please follow instructions below to install SAAB+ pipeline on our machine
 
+### Prerequisites
+SAAB+ comes with **FREAD** package, however, **anarci** and **scallop** are not supplied.
+
+
 INSTRUCTION to run SAAB+
 
 

@@ -1,15 +1,30 @@
 #!/usr/bin/python 
 """
 Script that check the presence of packages
-that are required to run SAAB_PLUS
-
+that are required to run SAAB_PLUS such as 
+ANARCI, SCALOP and FREAD
 """
-from saab_plus.run_diagnostics import Diagnostics
+import sys, os
+
+try:
+    from saab_plus.run_diagnostics import Diagnostics
+except ImportError, e:
+    print "Could not import saab_plus module! Is it in your PATH?: ",e
+    sys.exit()
 
 def main():
 
     diagnostics = Diagnostics()
     diagnostics()
+    
+    if not os.path.isfile("diagnostics.log"):
+        raise AssertionError("diagnostics.log was not created!?")
+
+    errors = ["ERROR" in line for line in open("diagnostics.log","r") ]
+    if not any(errors) and len(errors) > 0:
+        print "GOOD to run SAAB+"
+        return;
+    print "ERROR occured! Check diagnostics.log for the details!!!"
 
 if __name__ == "__main__":
     main()

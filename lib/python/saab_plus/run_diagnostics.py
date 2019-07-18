@@ -38,6 +38,12 @@ class Diagnostics:
             self.logger.info(" Successfully imported: anarci germlines")
         except ImportError:
             self.logger.error(" Cannot import: anarci germlines")
+        # Imporint anarci Accept class
+        try:
+            from saab_plus.aboss_utils.region_definitions import Accept
+            self.logger.info(" Successfully imported: anarci Accept")
+        except ImportError:
+            self.logger.error(" Cannot import: anarci Accept")
 
     def check_scalop(self):
         
@@ -117,11 +123,11 @@ class Diagnostics:
                 self.logger.info(" Number of FREAD templates found: {0}".format(self.count_templates(fread_db, ".atm.gz")))
 
             if not self.dir_exist( os.path.join( numbered_datasets_location,'sabdab', "IMGT")):
-                self.logger.error(" Directory with numbered PDB templates is not found")
+                self.logger.error(" Directory with numbered PDB frameworks is not found")
             else:
-                self.logger.info(" Directory with numbered PDB templates: OK")
+                self.logger.info(" Directory with numbered PDB frameworks: OK")
                 if not os.listdir( os.path.join( numbered_datasets_location,'sabdab', "IMGT") ):
-                    self.logger.error(" Directory with numbered PDB templates: empty!!!")
+                    self.logger.error(" Directory with numbered PDB frameworks: empty!!!")
         except ImportError:
             self.logger.error(" Cannot import PATHs from Common module")
 

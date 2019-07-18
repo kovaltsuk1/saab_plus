@@ -1,5 +1,5 @@
 from collections import defaultdict
-from aboss.region_definitions import Accept
+from saab_plus.aboss_utils.region_definitions import Accept
 import json
 
 list_of_frames ={
