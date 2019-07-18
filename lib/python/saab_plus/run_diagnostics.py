@@ -5,14 +5,7 @@ install on the system
 import os
 import logging
 
-
-
-#logging.basicConfig(filename='diagnostics.log', level=logging.INFO,
-#                     format="%(asctime)-15s %(levelname)s %(message)s",
-#                     datefmt='%Y-%m-%d %H:%M:%S')
 class Diagnostics:
-
-
     def __init__(self):
         self.logger = logging.getLogger("diagnostic_application")
         self.logger.setLevel(logging.INFO)
@@ -59,8 +52,8 @@ class Diagnostics:
         try:
             import code.Alignment.FREAD.pyfread_api as fread
             self.logger.info(" Successfully imported: FREAD")
-            where_i_am = fread.where_am_i
-            esst = os.path.join(where_i_am, "esst.txt")
+            esst = fread.esst_path
+
             if os.path.isfile(esst):
                 self.logger.info(" Successfully imported: FREAD ESS table")
             else:
@@ -133,6 +126,5 @@ class Diagnostics:
             self.logger.error(" Cannot import PATHs from Common module")
 
 if __name__ == "__main__":
-    
     diagnostics = Diagnostics()
     diagnostics()

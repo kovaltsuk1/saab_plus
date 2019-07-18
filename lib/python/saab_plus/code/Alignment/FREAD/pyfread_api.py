@@ -7,7 +7,7 @@ import os
 import datetime
 from optparse import OptionParser
 where_am_i = os.path.dirname(os.path.realpath(__file__))
-
+esst_path = os.path.join(where_am_i,'../../../data_esst/esst.txt')
 import numpy # Just to test if we have numpy installed.
 
 # Make sure we can import stuff from this file's directory
@@ -149,7 +149,7 @@ def run_fread(dbdir,pdb_file,start_of_loop,loop_sequence,chain,output_file):
     frd.calculate_contacts = False#Default
     frd.contact_identity = 0.8#Default
     frd.mutate = False  
-    frd.set_subst_tables(os.path.join(where_am_i,'esst.txt'))#Default
+    frd.set_subst_tables(esst_path)
     
     frd.set_structure(pdb_file)
    

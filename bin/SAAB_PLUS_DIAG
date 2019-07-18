@@ -1,0 +1,15 @@
+#!/usr/bin/python 
+"""
+Script that check the presence of packages
+that are required to run SAAB_PLUS
+
+"""
+from saab_plus.run_diagnostics import Diagnostics
+
+def main():
+
+    diagnostics = Diagnostics()
+    diagnostics()
+
+if __name__ == "__main__":
+    main()

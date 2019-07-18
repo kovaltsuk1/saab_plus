@@ -1,3 +1,4 @@
+#!/bin/python
 import logging
 logging.basicConfig(filename='saab_plus.log', level=logging.INFO,
                      format="%(asctime)-15s %(levelname)s %(message)s",
@@ -6,13 +7,13 @@ logging.basicConfig(filename='saab_plus.log', level=logging.INFO,
 import pandas as pd
 import os, sys
 from argparse import ArgumentParser
-from aboss_utils.run_ANARCI_parsing import Main
+from saab_plus.aboss_utils.run_ANARCI_parsing import Main
 import itertools
 from Bio import SeqIO
 from collections import Counter
-from RunSAAB import RunSaab
-from code.apply_ess_cutoff import ApplyESS
-from run_diagnostics import Diagnostics 
+from saab_plus.RunSAAB import RunSaab
+from saab_plus.code.apply_ess_cutoff import ApplyESS
+from saab_plus.run_diagnostics import Diagnostics 
 
 class Filtering(object):
     """

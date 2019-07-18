@@ -6,12 +6,12 @@ import csv, sys
 from itertools import tee
 import numpy as np
 import pandas as pd
-from aboss_utils.species_viability import checking_structural_viability, checking_sequence_viability,\
+from saab_plus.aboss_utils.species_viability import checking_structural_viability, checking_sequence_viability,\
                                                                         list_of_frames, CDR3, FW1, FW3
 from argparse import ArgumentParser
 csv.field_size_limit(sys.maxsize)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from aboss_utils.ProgressBar import returnProgress 
+from saab_plus.aboss_utils.ProgressBar import returnProgress 
 import logging
 
 def check_anarci():
