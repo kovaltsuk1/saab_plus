@@ -65,6 +65,5 @@ SAAB+ returns a zipped DataFrame file.
             Framework - PDB structure that was used in CDR-H3 structure prediction  
               CDRHSeq - Sequence of CDR-H3 loop  
                   ESS - FREAD score for the predicted CDR-H3 structure  
-StructurallyAnnotated - Sequnces, whose FREAD CDR-H3 structure prediction scores were above the quality threshold
-      
+StructurallyAnnotated - Sequnces, whose FREAD CDR-H3 structure prediction scores were above the quality threshold      
 ```
