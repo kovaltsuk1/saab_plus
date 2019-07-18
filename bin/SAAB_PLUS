@@ -1,4 +1,58 @@
-#!/bin/python
+#!/usr/bin/python
+
+description="""
+                        -------
+-----------------------| SAAB+ |-----------------------
+                        -------
+           Annotation of BCR repertoires with
+                 Structural Information
+
+                    Version: 1.0a
+
+                All rights reserved.
+         This program is free for academic use.
+
+        SAAB+ developed by Kovaltsuk et al., 2019.
+
+         For feedback, questiong and bug reports
+         please contact <opig@stats.ox.ac.uk> or
+                     <kovaltsu@stats.ox.ac.uk>              
+
+                        --------
+-----------------------| INPUTS |----------------------
+                        --------
+     SAAB_PLUS takes a .fasta file as the input e.g.
+
+    >blah1
+    SLRLSCAASGFTFSGHWMYWVRQAPGKGLVWVARINND.....
+    >blah2
+    SLRLSCAASGFTFRSYWMSWVRQAPGRGLEWIARIND......
+
+    -s option includes BCR repertoire species
+    information, which is human by default
+
+    Currently, SAAB+ supports heavy chain analysis
+
+                       ---------
+----------------------| OUTPUTS |----------------------
+                       ---------
+          SAAB+ outputs a gzip'ed DataFrame
+             with Structural Annotation
+
+          Protein_Seq - Full antibody amino acid sequence
+                H3pdb - FREAD PDB templates
+                Canon - Canonical Classes Clusters
+           Redundancy - Number of Proiten_Seq copies in the
+                        input fasta file
+            Framework - PDB template used for CDR-H3 
+                        structure prediction
+              CDRHSeq - Sequence of CDR-H3 loop
+                  ESS - Score for predicted CDR-H3 template
+StructurallyAnnotated - Sequences, whose CDR-H3s passed
+                        quality control
+-------------------------------------------------------
+"""
+
 import logging
 logging.basicConfig(filename='saab_plus.log', level=logging.INFO,
                      format="%(asctime)-15s %(levelname)s %(message)s",
@@ -6,7 +60,7 @@ logging.basicConfig(filename='saab_plus.log', level=logging.INFO,
 
 import pandas as pd
 import os, sys
-from argparse import ArgumentParser
+from argparse import ArgumentParser, RawDescriptionHelpFormatter
 from saab_plus.aboss_utils.run_ANARCI_parsing import Main
 import itertools
 from Bio import SeqIO
@@ -14,6 +68,7 @@ from collections import Counter
 from saab_plus.RunSAAB import RunSaab
 from saab_plus.code.apply_ess_cutoff import ApplyESS
 from saab_plus.run_diagnostics import Diagnostics 
+import textwrap
 
 class Filtering(object):
     """
@@ -22,7 +77,7 @@ class Filtering(object):
     def __init__(self, arguments):
         self.filename = arguments["filename"]
         self.ncores = arguments["ncores"]
-        self.species = arguments["organism"]
+        self.species = arguments["species"]
         self.chain = arguments["chain"]
         self.output_name = arguments["output_name"]
         self.output_dir = arguments["output_dir"]
@@ -104,26 +159,28 @@ class Filtering(object):
         print "\n\t\tDone!\n"
 
 def initArgParser():
-    parser = ArgumentParser(description=__doc__)
-    group = parser.add_argument_group('study arguments')
+    parser = ArgumentParser(description = textwrap.dedent(description),
+                            formatter_class=RawDescriptionHelpFormatter)
+    group = parser.add_argument_group('Argument for BCR repertoire annotation')
     group.add_argument('-f', action='store', dest='filename', default=False,
-                        help="Filename to be analyzed")
-    group.add_argument('-s', action='store', dest='organism', default=False,
-                        help="organism information in the study [human, mouse, rhesus, alpaca]")
+                        help="""FASTA file to be analysed.
+                        Only amino acid sequences to be submitted""")
+    group.add_argument('-s', action='store', dest='species', default="human",
+                        help="Species information. Default: human. Supported species are [human, mouse, rhesus, alpaca]")
     group.add_argument('-n', action='store', dest='ncores', default=16, type=int,
-                        help="number of cores to use in multiprocessing")
+                        help="Number of CPU cores to use")
     group.add_argument("-c", action="store", dest="chain", default="H",
-                        help="Chain information H (currently only H) ")
+                        help="Antibody chain information. Currently only H (heavy) is supported ")
     group.add_argument("-o", action="store", dest="output_name", default="output.txt",
-                        help="output filename, Default is output_name.txt")
+                        help="Output filename, Default is output_name.txt")
     group.add_argument("-d", action="store", dest="output_dir", default=".",
-                        help="output filename, Default is current working directory")
+                        help="output direcyory, Default is current working directory")
     return parser
 
 def printStatus(args):
     print "      FILE: {0}".format(args.filename)
     print "     CORES: {0}".format(args.ncores)
-    print "  ORGANISM: {0}".format(args.organism)
+    print "  ORGANISM: {0}".format(args.species)
     print "     CHAIN: {0}".format(args.chain)
     print "OutputName: {0}".format(args.output_name)
     print " OutputDir: {0}".format(args.output_dir)
@@ -131,7 +188,7 @@ def printStatus(args):
     logging.info("\t\tInitiating structural annotation pipeline")
     logging.info("\t      FILE: {0}".format(args.filename))
     logging.info("\t     CORES: {0}".format(args.ncores))
-    logging.info("\t  ORGANISM: {0}".format(args.organism))
+    logging.info("\t  ORGANISM: {0}".format(args.species))
     logging.info("\t     CHAIN: {0}".format(args.chain))
     logging.info("\tOutputName: {0}".format(args.output_name))
     logging.info("\t OutputDir: {0}".format(args.output_dir))
@@ -150,7 +207,7 @@ if __name__ == "__main__":
     if not args.filename:
         raise AssertionError("Study was not specified, exiting!!!")
 
-    if not args.organism:
+    if not args.species:
         raise AssertionError("Organism was not selected")
 
     arguments = printStatus(args)

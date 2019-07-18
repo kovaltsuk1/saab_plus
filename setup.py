@@ -45,7 +45,7 @@ setup(name='saab_plus',
                                    ["data_esst/esst.txt"]
                                     },
       scripts=["bin/SAAB_PLUS", 
-               "bin/SAAB_PLUS_DIAG"]
+               "bin/SAAB_PLUS_DIAG"],
       license="MIT",
      )
 

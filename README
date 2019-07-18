@@ -1,4 +1,13 @@
+# Structural Annotation of BCR Receptor Repertoires
+SAAB+: annotation of BCR Receptor Repertoires with structural information, using separate tools
+to map non-CDR-H3 and CDR-H3 loop sequence to repersentative structures.
+
+## Getting Started
+Please follow instructions below to install SAAB+ pipeline on our machine
+
 INSTRUCTION to run SAAB+
+
+
 
 Input file:
 	fasta file
