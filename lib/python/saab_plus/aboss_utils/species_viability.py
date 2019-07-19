@@ -211,6 +211,13 @@ def checking_structural_viability(numbering, species, chain):
             quality = rabbit_length_check_fw1(fw,all_region_aa,rabbit_position_2,quality)
     return all_region_aa, quality, regions
 
+def check_depth(l):
+    "anarci versions have different depths"
+    if isinstance(l, list):
+        return 1 + max(check_depth(item) for item in l)
+    else:
+        return 0
+
 def check_V_and_J_gene_IMGT_alignment(species_matrix, gene, species):
     """Function that iterates through ANARCI species matrix to find sequence identities
             @species_matrix: ANARCI top species alignements with corresponding scores
@@ -220,16 +227,27 @@ def check_V_and_J_gene_IMGT_alignment(species_matrix, gene, species):
             @IG_gene: IG gene, or None if no confident alignemnts
     """
     IG_gene = False
-    if species_matrix[0]["germlines"][gene][0][0][0] != species:
-        range_genes = len(species_matrix[0]["germlines"][gene][0])
-        for n in range(range_genes):
-            if species_matrix[0]["germlines"][gene][0][n][0] == species:
-                if species_matrix[0]["germlines"][gene][1][n] > 0.5:
-                    IG_gene = species_matrix[0]["germlines"][gene][0][n][1]
-                break
-    else:
-        if species_matrix[0]["germlines"][gene][1][0] > 0.50:
-            IG_gene = species_matrix[0]["germlines"][gene][0][0][1]
+
+    depth = check_depth(species_matrix[0]["germlines"][gene])
+
+    if depth == 1:
+        if species_matrix[0]["germlines"][gene][0][0] != species:
+            return IG_gene
+        else:
+            if species_matrix[0]["germlines"][gene][1] > 0.5:
+                return species_matrix[0]["germlines"][gene][0][1] 
+
+    if depth == 2:
+        if species_matrix[0]["germlines"][gene][0][0][0] != species:
+            range_genes = len(species_matrix[0]["germlines"][gene][0])
+            for n in range(range_genes):
+                if species_matrix[0]["germlines"][gene][0][n][0] == species:
+                    if species_matrix[0]["germlines"][gene][1][n] > 0.5:
+                        IG_gene = species_matrix[0]["germlines"][gene][0][n][1]
+                    break
+        else:
+            if species_matrix[0]["germlines"][gene][1][0] > 0.50:
+                IG_gene = species_matrix[0]["germlines"][gene][0][0][1]
     return IG_gene
 
 def check_IMGT_alignment(species_matrix, species, chain):
@@ -245,6 +263,7 @@ def check_IMGT_alignment(species_matrix, species, chain):
     IGH_IGJ_status = "unknown"
     IG_V = check_V_and_J_gene_IMGT_alignment(species_matrix,"v_gene", species)
     IG_J = check_V_and_J_gene_IMGT_alignment(species_matrix,"j_gene", species)
+    print IG_V, IG_J
     if chain == "H":
         if not IG_J or not IG_V:
             IGH_IGJ_status = None
