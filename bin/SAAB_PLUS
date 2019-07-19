@@ -133,7 +133,7 @@ class Filtering(object):
         anarci_parsing.run()
         os.remove(self.gziped)
 
-        print "\n\t\tanarci parsing is done\n"
+        print "\n\tanarci parsing is done\n"
         logging.info("\tANARCI parsing is finished")
         # Starting SAAB running
         anarci_gzip_file = "anarci_parsed.txt.gz"
@@ -142,7 +142,7 @@ class Filtering(object):
             raise AssertionError("File is not found: ", anarci_gzip_file)
 
         # Running SAAB+
-        print "\t\tInitiating SAAB plus"
+        print "\tInitiating SAAB plus"
         logging.info("\tStarting SAAB plus pipeline\n")
         saab_instance = RunSaab(anarci_gzip_file, 
                                 self.output_name, 
@@ -159,7 +159,7 @@ class Filtering(object):
         apply_ess_instance.save()
         logging.info("\touput_file is: {0}".format(os.path.join(self.output_dir, self.output_name+".gz")))
         logging.info("\n\n\t\tDONE!\n\n")
-        print "\n\t\tDone!\n"
+        print "\n\tDone!\n"
 
 def initArgParser():
     parser = ArgumentParser(description = textwrap.dedent(description),

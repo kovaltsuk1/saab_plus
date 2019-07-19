@@ -263,7 +263,6 @@ def check_IMGT_alignment(species_matrix, species, chain):
     IGH_IGJ_status = "unknown"
     IG_V = check_V_and_J_gene_IMGT_alignment(species_matrix,"v_gene", species)
     IG_J = check_V_and_J_gene_IMGT_alignment(species_matrix,"j_gene", species)
-    print IG_V, IG_J
     if chain == "H":
         if not IG_J or not IG_V:
             IGH_IGJ_status = None
