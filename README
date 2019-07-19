@@ -15,7 +15,14 @@ SAAB+ comes with **FREAD** package, however, **anarci** and **scallop** are not 
                         SCALOP is downloaded with the latest number of canonical classes
 
 ### Installing
-To install SAAB+, run
+
+To install SAAB+ as root run:
+
+```
+python setup.py install
+```
+For users without root access install locally using:
+
 ```
 python setup.py install --user
 ```
@@ -44,5 +51,27 @@ If installation was successful, the diagnostics.log should look like:
 ```
 
 ### Running a test example
-SAAB+ takes antibody sequences in the fasta format as the input.  
+SAAB+ takes antibody sequences in the fasta format as the input. e.g.
+>&gt;seq1  
+>SLRLSCAASGFTFSGHWMYWVRQAPGKGLVWVARINND.....  
+>&gt;seq2  
+>SLRLSCAASGFTFRSYWMSWVRQAPGRGLEWIARIND......
+
+The EXAMPLE folder contains a test fasta file.
+To run SAAB+ pipeline on ten CPU cores, 
+```
+SAAB_PLUS -f Fasta_example.fa -n 10
+```
+### Interpreting SAAB+ outputs
+SAAB+ returns a zipped DataFrame file.
+```
+          Protein_Seq - Full antibody amino acid sequences. Only sequences that passed anarci structural viability assessment are retained.  
+                H3pdb - CDR-H3 structure that was predicted by FREAD  
+                Canon - SCALOP predicted non-CDR-H3 canonical classes  
+           Redundancy - Number of Proiten_Seq copies in the input fasta file  
+            Framework - PDB structure that was used in CDR-H3 structure prediction  
+              CDRHSeq - Sequence of CDR-H3 loop  
+                  ESS - FREAD score for the predicted CDR-H3 structure  
+StructurallyAnnotated - Sequnces, whose FREAD CDR-H3 structure prediction scores were above the quality threshold      
+```
 

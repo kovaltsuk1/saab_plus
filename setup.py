@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from distutils.core import setup
+import distutils
 import os
 
 def fread_db_library(directory):
