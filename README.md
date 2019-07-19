@@ -15,7 +15,14 @@ SAAB+ comes with **FREAD** package, however, **anarci** and **scallop** are not 
                         SCALOP is downloaded with the latest number of canonical classes
 
 ### Installing
-To install SAAB+, run
+
+To install SAAB+ as root run:
+
+```
+python setup.py install
+```
+For users without root access install locally using:
+
 ```
 python setup.py install --user
 ```
