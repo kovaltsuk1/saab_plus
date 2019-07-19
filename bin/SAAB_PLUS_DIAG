@@ -14,6 +14,9 @@ except ImportError, e:
 
 def main():
 
+    is os.path.isfile("diagnostics.log"):
+        os.remove("diagnostics.log")
+
     diagnostics = Diagnostics()
     diagnostics()
     

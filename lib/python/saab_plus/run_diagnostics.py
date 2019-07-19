@@ -4,6 +4,7 @@ install on the system
 """
 import os
 import logging
+from shutil import copyfile
 
 class Diagnostics:
     def __init__(self):
@@ -14,6 +15,8 @@ class Diagnostics:
         file_handler.setFormatter(formatter)
         self.logger.addHandler(file_handler)
 
+        self.anarci = False
+        self.scalop = False
     def __call__(self):
         self.logger.info("\tWriting DIAGNOSTICS log\n")    
        
@@ -36,6 +39,7 @@ class Diagnostics:
         try:
             from anarci.germlines import all_germlines
             self.logger.info(" Successfully imported: anarci germlines")
+            self.anarci = True
         except ImportError:
             self.logger.error(" Cannot import: anarci germlines")
         # Imporint anarci Accept class
@@ -48,10 +52,39 @@ class Diagnostics:
     def check_scalop(self):
         
         try:
-            from scalop.inhouse_predict import _assign
+            import scalop
             self.logger.info(" Successfully imported: scalop")
-        except ImportError:
+            self.scalop = True
+        except:
             self.logger.error(" Cannot import: scalop")
+
+        if self.scalop:
+            try:
+                from scalop.inhouse_predict import _assign
+                self.logger.info(" Successfully imported: scalop assing")
+            except ImportError:
+                # copy anarci germline to scalop 
+                self.copy_germlines()
+
+                try:
+                    from scalop.inhouse_predict import _assign
+                    self.logger.info(" Successfully imported: scalop assing")
+                except:
+                    self.logger.error(" Cannot import: scalop")
+
+    def copy_germlines(self):
+        self.logger.info(" scalop does not have germline!!!")
+        import anarci
+        anarci_loc = os.path.dirname(anarci.__file__)
+        anarci_germ = os.path.join(anarci_loc, "germlines.py")
+        if not os.path.isfile(anarci_germ):
+            self.logging.error(" Cannot locate: anarci germlines.py")
+        
+        import scalop
+        scalop_loc = os.path.dirname(scalop.__file__)
+        scalop_germ =  os.path.join(scalop_loc, "anarci/germlines.py")
+        copyfile(anarci_germ, scalop_germ)
+        self.logger.info(" anarci germlines were copied to scalop")
 
     def check_fread(self):
        
