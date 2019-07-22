@@ -59,12 +59,12 @@ SAAB+ takes antibody sequences in the fasta format as the input. e.g.
 >SLRLSCAASGFTFRSYWMSWVRQAPGRGLEWIARIND......
 
 The EXAMPLE folder contains a test fasta file.
-To run SAAB+ pipeline on ten CPU cores, 
+To run SAAB+ pipeline on human BCR data across twenty CPU cores, 
 ```
-SAAB_PLUS -f Fasta_example.fa -n 10
+SAAB_PLUS -f Fasta_example.fa -n 20 -o human
 ```
 ### Interpreting SAAB+ outputs
-SAAB+ returns a zipped DataFrame file.
+SAAB+ outputs a zipped tab-delimited text file.
 ```
           Protein_Seq - Full antibody amino acid sequences. Only sequences that passed anarci structural viability assessment are retained.  
                 H3pdb - CDR-H3 structure that was predicted by FREAD  
