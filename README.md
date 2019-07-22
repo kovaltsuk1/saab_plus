@@ -3,7 +3,7 @@
 
 # Structural Annotation of BCR Repertoires
 SAAB+: annotation of BCR Repertoires with structural information, using separate tools
-to map non-CDR-H3 and CDR-H3 loop sequence to repersentative structures.
+to map non-CDR-H3 and CDR-H3 loop sequence to repersentative antibody structures.
 
 ## Getting Started
 Please follow instructions below to install SAAB+ pipeline on our machine
