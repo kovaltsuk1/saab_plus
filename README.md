@@ -11,6 +11,9 @@ SAAB+ comes with the antibody customized version of **FREAD** package.
 
 > * [anarci v1.3](http://opig.stats.ox.ac.uk/webapps/newsabdab/sabpred/anarci) - is the antibody sequence numbering tool. In SAAB+ pipeline, anarci is used to filter the sequences for structural viability. Upon installation, anarci automatically downloads the latest version of IMGT germlines.
 > * [scalop](http://opig.stats.ox.ac.uk/webapps/newsabdab/sabpred/scalop) - is the antibody canonical class annotation tool. SCALOP is downloaded with the latest version of antibody canonical classes.
+> * [hmmer](http://hmmer.org/download.html) - is required to build antibody HMM profiles that anarci uses. anarci was tested with 3.1b2 hmmer version.
+
+### python package dependencies
 
 ### Installing
 
