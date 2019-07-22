@@ -6,13 +6,11 @@ to map non-CDR-H3 and CDR-H3 loop sequence to repersentative structures.
 Please follow instructions below to install SAAB+ pipeline on our machine
 
 ### Prerequisites
-SAAB+ comes with **FREAD** package, however, **anarci** and **scallop** are not supplied.
+SAAB+ comes with the antibody customized version of **FREAD** package.  
+**anarci** and **scalop** are not supplied and need to be downloaded separately.
 
-> * [anarci v1.3](http://opig.stats.ox.ac.uk/webapps/newsabdab/sabpred/anarci) - anarci is neccessary to number BCR Repertoire sequences and
-                             filter the sequences for structural viability.
-                             anarci automatically downloads the latest IMGT germlines.
-> * [scalop](http://opig.stats.ox.ac.uk/webapps/newsabdab/sabpred/scalop) - SCALOP is antibody canonical class annotation software.
-                        SCALOP is downloaded with the latest number of canonical classes
+> * [anarci v1.3](http://opig.stats.ox.ac.uk/webapps/newsabdab/sabpred/anarci) - is the antibody sequence numbering tool. In SAAB+ pipeline, anarci is used to filter the sequences for structural viability. Upon installation, anarci automatically downloads the latest version of IMGT germlines.
+> * [scalop](http://opig.stats.ox.ac.uk/webapps/newsabdab/sabpred/scalop) - is the antibody canonical class annotation tool. SCALOP is downloaded with the latest version of antibody canonical classes.
 
 ### Installing
 
