@@ -1,7 +1,7 @@
 [![Python 2.7](https://img.shields.io/badge/python-2.7-blue.svg)](https://www.python.org/download/releases/2.7/)
 
-# Structural Annotation of BCR Receptor Repertoires
-SAAB+: annotation of BCR Receptor Repertoires with structural information, using separate tools
+# Structural Annotation of BCR Repertoires
+SAAB+: annotation of BCR Repertoires with structural information, using separate tools
 to map non-CDR-H3 and CDR-H3 loop sequence to repersentative structures.
 
 ## Getting Started
