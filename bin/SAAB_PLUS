@@ -1,5 +1,4 @@
-#!/usr/bin/python
-
+#!/usr/bin/env python2.7
 description="""
                         -------
 -----------------------| SAAB+ |-----------------------
@@ -7,14 +6,15 @@ description="""
            Annotation of BCR repertoires with
                  Structural Information
 
-                    Version: 1.0a
-
-                All rights reserved.
-         This program is free for academic use.
+                    Version: 1.0.0
 
         SAAB+ developed by Kovaltsuk et al., 2019.
 
-         For feedback, questiong and bug reports
+                BSD 3-Clause License
+ Copyright (c) 2019, Oxford Protein Informatics Group (OPIG)
+                All rights reserved.
+
+         For feedback, questions and bug reports
          please contact <opig@stats.ox.ac.uk> or
                      <kovaltsu@stats.ox.ac.uk>              
 
@@ -28,16 +28,14 @@ description="""
     >blah2
     SLRLSCAASGFTFRSYWMSWVRQAPGRGLEWIARIND......
 
-    -s option includes BCR repertoire species
-    information, which is human by default
-
-    Currently, SAAB+ supports heavy chain analysis
+            Currently, SAAB+ supports heavy chain 
+                BCR repertoire analysis
 
                        ---------
 ----------------------| OUTPUTS |----------------------
                        ---------
-          SAAB+ outputs a gzip'ed DataFrame
-             with Structural Annotation
+     SAAB+ outputs a gzip'ed tab-delimited (DataFrame) 
+         text file with Structural Annotation
 
           DataFrame columns are:
 
@@ -67,16 +65,15 @@ import os, sys
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 import textwrap
 from saab_plus.aboss_utils.run_ANARCI_parsing import Main
-import itertools
 from Bio import SeqIO
 from collections import Counter
 from saab_plus.RunSAAB import RunSaab
 from saab_plus.code.apply_ess_cutoff import ApplyESS
 from saab_plus.run_diagnostics import Diagnostics 
 
-class Filtering(object):
+class Annotation(object):
     """
-    Annotation of Ig-seq data with structural information
+    Annotation of BCR repertoires with structural information
     """
     def __init__(self, arguments):
         self.filename = arguments["filename"]
@@ -94,14 +91,22 @@ class Filtering(object):
                                  """)
 
     def check_diagnostics_log(self):
+        """
+        Function that checks if any ERRORs
+        were recorded in diagnostics.log
+        """
         errors = ["ERROR" in line for line in open("diagnostics.log","r") ]
         if not any(errors) and len(errors) > 0:
             return True
         return False
 
     def pass_diagnostics(self):
+        """
+        Deleting existing diagnostics.log
+        Next, running Diagnostics() and 
+        checking for errors
+        """
         if os.path.isfile("diagnostics.log"):
-            #return self.check_diagnostics_log()
             os.remove("diagnostics.log")
         diagnostics = Diagnostics()
         diagnostics()
@@ -153,6 +158,8 @@ class Filtering(object):
 
         logging.info("\tSAAB+ is finished")
         logging.info("\tApplying quality filters")
+
+        # Quality filters
         apply_ess_instance = ApplyESS(os.path.join(self.output_dir, self.output_name+".gz") )
         apply_ess_instance.adding_pdb_length()
         apply_ess_instance.apply_ess()
@@ -167,14 +174,15 @@ def initArgParser():
     group = parser.add_argument_group('Argument for BCR repertoire annotation')
     group.add_argument('-f', action='store', dest='filename', default=False,
                         help="""FASTA file to be analysed.
-                        Only amino acid sequences to be submitted""")
+                        Only amino acid sequences are accepted""")
     group.add_argument('-s', action='store', dest='species', default="human",
                         help="Species information. Default: human",
                         choices= ["human", "mouse", "rhesus", "alpaca"])
     group.add_argument('-n', action='store', dest='ncores', default=4, type=int,
                         help="Number of CPU cores to use")
     group.add_argument("-c", action="store", dest="chain", default="H",
-                        help="Antibody chain information. Currently only H (heavy) is supported ")
+                        help="Antibody chain information. Currently only H (heavy) is supported ",
+                        choices=["H"])
     group.add_argument("-o", action="store", dest="output_name", default="output.txt",
                         help="Output filename, Default is output_name.txt")
     group.add_argument("-d", action="store", dest="output_dir", default=".",
@@ -209,12 +217,12 @@ if __name__ == "__main__":
         sys.exit(1)
 
     if not args.filename:
-        raise AssertionError("Study was not specified, exiting!!!")
+        raise AssertionError("Filename was not specified, exiting!!!")
 
     if not args.species:
-        raise AssertionError("Organism was not selected")
+        raise AssertionError("Species was not selected")
 
     arguments = printStatus(args)
-    STUDY = Filtering(arguments)
+    STUDY = Annotation(arguments)
     STUDY.convert_fasta_to_frame()
     STUDY.run()

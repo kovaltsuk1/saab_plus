@@ -1,9 +1,7 @@
-import os,pickle,sys
 from Common.Common import get_sequence, numbered_datasets_location, number_sequence
 from Alignment.Align import align_sequences
 from Alignment.LoopAlignment import perform_loop_alignment, extract_cdrs
 from DataManagement.SAbDab import structural_reference
-import json, os
 import multiprocessing as mp
 import numpy as np
 from scalop.inhouse_predict import _assign
@@ -97,7 +95,7 @@ def align_single_sequence(queries, structures, chain):
                 fread_results, essScore = get_best_cdr_match( CDRSequences, full_results['best_pdb'], chain)
             except:
                 essScore = 0
-                logging.error("\t INPUT failed FREAD: {0}".format(query[0]))
+                logging.error("\tFREAD could not run: {0}".format(query[0]))
         else:
             essScore = 0
             CDR3Sequence = ""

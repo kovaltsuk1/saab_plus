@@ -1,6 +1,6 @@
 """
 Script that checks that we have all databases and software tools
-install on the system
+installed
 """
 import os
 import logging
@@ -73,7 +73,11 @@ class Diagnostics:
                     self.logger.error(" Cannot import: scalop")
 
     def copy_germlines(self):
-        self.logger.info(" scalop does not have germline!!!")
+        """
+        Copying anarci germlines to scalop directory, since
+        scalop does not come with pre-installed germlines
+        """
+        self.logger.warning(" scalop does not have germline!!!")
         import anarci
         anarci_loc = os.path.dirname(anarci.__file__)
         anarci_germ = os.path.join(anarci_loc, "germlines.py")

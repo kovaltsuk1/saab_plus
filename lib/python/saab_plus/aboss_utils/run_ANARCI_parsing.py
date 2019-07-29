@@ -24,7 +24,8 @@ def check_anarci():
         logging.info("\tNot sure about anarci version")
 
 def anarci_fun(list_of_inputs, ncores):
-    """ANARCI running function
+    """
+    ANARCI running function
         @list_of_inputs: List of antibody sequences
         @ncores: Number of CPU cores to use
     Return:
@@ -39,7 +40,8 @@ def anarci_fun(list_of_inputs, ncores):
     return output
 
 class Main(object):
-    """Class that initiates structural filtering analysis.
+    """
+    Class that initiates structural filtering analysis.
         @input_file: txt file where antibody amino acid sequences are
                      in the column with Protein_Seq as a header
         @ncpu: number of cores used 
@@ -54,6 +56,7 @@ class Main(object):
        self.input_file = input_file
 
        if not os.path.isfile(self.input_file):
+           logging.warning("Input file does not exist: {0}".format(self.input_file))
            raise AssertionError("Input file does not exist: ", self.input_file)
        self.ncpu = ncpu
        self.rate_of_analysis = 200000
@@ -109,7 +112,7 @@ class Main(object):
             if not output:
                 continue
 
-            if len(output[1]) < 5000:
+            if len(output[1]) < 3000:
                 self.ncpu = 1
 
             anarci_output = np.array_split(output[1], self.ncpu)

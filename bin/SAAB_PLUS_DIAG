@@ -1,6 +1,6 @@
-#!/usr/bin/python 
+#!/usr/bin/env python2.7
 """
-Script that check the presence of packages
+Script that checks the presence of packages
 that are required to run SAAB_PLUS such as 
 ANARCI, SCALOP and FREAD
 """
