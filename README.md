@@ -36,22 +36,24 @@ SAAB_PLUS_DIAG
 This script generates a file __diagnostics.log__.  
 If installation was successful, the diagnostics.log should look like:
 ```
-2019-07-18 16:21:55,780 INFO 	Writing DIAGNOSTICS log
-2019-07-18 16:21:55,943 INFO  Successfully imported: anarci
-2019-07-18 16:21:55,944 INFO  Successfully imported: anarci germlines
-2019-07-18 16:21:55,946 INFO  Successfully imported: anarci Accept
-2019-07-18 16:21:56,244 INFO  Successfully imported: scalop
-2019-07-18 16:21:56,291 INFO  Successfully imported: FREAD
-2019-07-18 16:21:56,291 INFO  Successfully imported: FREAD ESS table
-2019-07-18 16:21:56,291 INFO  Successfully imported: prosci module
-2019-07-18 16:21:56,295 INFO  Successfully imported: Common module
-2019-07-18 16:21:56,295 INFO          PDB template info file is located: OK
-2019-07-18 16:21:56,331 INFO   Directory with PDB frameworks is located: OK
-2019-07-18 16:21:56,332 INFO  Directory with FREAD templates is located: OK
-2019-07-18 16:21:56,658 INFO  Number of FREAD templates found: 3759
-2019-07-18 16:21:56,658 INFO  Directory with numbered PDB frameworks: OK
-```
+2019-07-29 15:59:18,606 INFO 	Writing DIAGNOSTICS log
 
+2019-07-29 15:59:18,684 INFO  Successfully imported: anarci
+2019-07-29 15:59:18,684 INFO  Successfully imported: anarci germlines
+2019-07-29 15:59:18,685 INFO  Successfully imported: anarci Accept
+2019-07-29 15:59:18,686 INFO  Successfully imported: scalop
+2019-07-29 15:59:18,857 INFO  Successfully imported: scalop assing
+2019-07-29 15:59:18,867 INFO  Successfully imported: FREAD
+2019-07-29 15:59:18,867 INFO  Successfully imported: FREAD ESS table
+2019-07-29 15:59:18,867 INFO  Successfully imported: prosci module
+2019-07-29 15:59:18,868 INFO  Successfully imported: Common module
+2019-07-29 15:59:18,868 INFO          PDB template info file is located: OK
+2019-07-29 15:59:18,869 INFO   Directory with PDB frameworks is located: OK
+2019-07-29 15:59:18,870 INFO  Directory with FREAD templates is located: OK
+2019-07-29 15:59:19,516 INFO  Number of FREAD templates found: 3759
+2019-07-29 15:59:19,517 INFO  Directory with numbered PDB frameworks: OK
+```
+If any __ERROR__ were recorded in diagnostics.log, you will not be able to initialise SAAB_PLUS
 ### Running a test example
 SAAB+ takes antibody sequences in the fasta format as the input. e.g.
 >&gt;seq1  
@@ -62,7 +64,7 @@ SAAB+ takes antibody sequences in the fasta format as the input. e.g.
 The EXAMPLE folder contains a test fasta file.
 To run SAAB+ pipeline on human BCR data across twenty CPU cores, 
 ```
-SAAB_PLUS -f Fasta_example.fa -n 20 -o human
+SAAB_PLUS -f Fasta_example.fa -n 20 -s human
 ```
 ### Interpreting SAAB+ outputs
 SAAB+ outputs a zipped tab-delimited text file.
