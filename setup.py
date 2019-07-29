@@ -19,7 +19,7 @@ def fread_db_library(directory):
 
 setup(name='saab_plus',
       version='1.0.0',
-      description='Structural Diversity of B-Cell Repertoire along the B-cell Differentiation axis in Humans',
+      description='Structural Diversity of B-Cell Repertoire along the B-cell Differentiation axis in Humans and Mice',
       author='Aleksandr Kovaltsuk',
       author_email='opig@stats.ox.ac.uk',
       url='http://opig.stats.ox.ac.uk//resources',

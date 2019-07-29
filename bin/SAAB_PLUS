@@ -40,17 +40,17 @@ description="""
           DataFrame columns are:
 
           Protein_Seq - Full antibody amino acid sequences
-                H3pdb - FREAD PDB templates
-                Canon - Canonical Classes Clusters
+      CDR-H3_template - FREAD PDB templates
+    Canonical_classes - Canonical Classes Clusters
            Redundancy - Number of Proiten_Seq copies in the
                         input fasta file
-            Framework - PDB template used in CDR-H3 
+   Framework_template - PDB template used in CDR-H3 
                         structure prediction
-              CDRHSeq - Sequence of CDR-H3 loop
-                  ESS - FREAD Score for the predicted 
+      CDR-H3_sequence - Sequence of CDR-H3 loop
+                  ESS - FREAD score for the predicted 
                         CDR-H3 structure
-StructurallyAnnotated - Sequences, whose CDR-H3 structure
-                        predictions scores were above 
+           Annotation - Sequences, whose CDR-H3 structure
+                        prediction scores were above 
                         the quality threshold
 -------------------------------------------------------
 """
