@@ -68,11 +68,11 @@ SAAB_PLUS -f Fasta_example.fa -n 20 -o human
 SAAB+ outputs a zipped tab-delimited text file.
 ```
           Protein_Seq - Full antibody amino acid sequences. Only sequences that passed anarci structural viability assessment are retained.  
-                H3pdb - CDR-H3 structure that was predicted by FREAD  
-                Canon - SCALOP predicted non-CDR-H3 canonical classes  
+      CDR-H3_template - CDR-H3 structure that was predicted by FREAD  
+    Canonical_classes - SCALOP predicted non-CDR-H3 canonical classes  
            Redundancy - Number of Proiten_Seq copies in the input fasta file  
-            Framework - PDB structure that was used in CDR-H3 structure prediction  
-              CDRHSeq - Sequence of CDR-H3 loop  
+   Framework_template - PDB structure that was used in CDR-H3 structure prediction  
+      CDR-H3_sequence - Sequence of CDR-H3 loop  
                   ESS - FREAD score for the predicted CDR-H3 structure  
-StructurallyAnnotated - Sequnces, whose FREAD CDR-H3 structure prediction scores were above the quality threshold      
+           Annotation - Sequnces, whose FREAD CDR-H3 structure prediction scores were above the quality threshold      
 ```
