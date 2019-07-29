@@ -10,7 +10,7 @@ Please follow instructions below to install SAAB+ pipeline on our machine
 
 ### Prerequisites
 SAAB+ comes with the antibody customized version of **FREAD** package.  
-**anarci** and **scalop** are not supplied and need to be downloaded separately.
+**anarci** and **scalop** are not supplied, and need to be downloaded separately.
 
 > * [anarci v1.3](http://opig.stats.ox.ac.uk/webapps/newsabdab/sabpred/anarci) - is the antibody sequence numbering tool. In SAAB+ pipeline, anarci is used to filter the sequences for structural viability. Upon installation, anarci automatically downloads the latest version of IMGT germlines.
 > * [scalop](http://opig.stats.ox.ac.uk/webapps/newsabdab/sabpred/scalop) - is the antibody canonical class annotation tool. SCALOP is downloaded with the latest version of antibody canonical classes.
@@ -33,7 +33,7 @@ To check if installation was successful, simply run
 ```
 SAAB_PLUS_DIAG
 ```
-This script generates a file __diagnostics.log__.  
+This script generates __diagnostics.log__.  
 If installation was successful, the diagnostics.log should look like:
 ```
 2019-07-29 15:59:18,606 INFO 	Writing DIAGNOSTICS log
@@ -59,10 +59,10 @@ SAAB+ takes antibody sequences in the fasta format as the input. e.g.
 >&gt;seq1  
 >SLRLSCAASGFTFSGHWMYWVRQAPGKGLVWVARINND.....  
 >&gt;seq2  
->SLRLSCAASGFTFRSYWMSWVRQAPGRGLEWIARIND......
+>SLRLSCAASGFTFRSYWMSWVRQAPGRGLEWIARINND.....
 
 The EXAMPLE folder contains a test fasta file.
-To run SAAB+ pipeline on human BCR data across twenty CPU cores, 
+To run SAAB+ pipeline on human BCR data across twenty CPU cores  
 ```
 SAAB_PLUS -f Fasta_example.fa -n 20 -s human
 ```
