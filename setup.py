@@ -10,7 +10,6 @@ if sys.version_info.major != 2:
     raise AssertionError("Currently only python 2.7 version is supported. Python 3 version will be released soon\nUse python2 setup.py instead")
 
 def fread_db_library(directory):
-
     paths = []
     for path, _, templates in os.walk(directory):
         for template in templates:
@@ -52,7 +51,7 @@ setup(name='saab_plus',
                                     },
       scripts=["bin/SAAB_PLUS", 
                "bin/SAAB_PLUS_DIAG"],
-      license="MIT",
+      license="BSD 3-Clause",
      )
 
 
