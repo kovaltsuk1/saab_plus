@@ -2,7 +2,7 @@ import pandas as pd
 import cPickle as pickle
 import os
 import numpy as np
-from Common.Common import pdb_length_location
+from Common.Common import pdb_length_location, clusters
 
 
 class ApplyESS:
@@ -30,7 +30,7 @@ class ApplyESS:
         """Function that checks if ESS is score is above 
         the cut-off for a given CDR-H3 length
         """
-        if loop_length <13 and essScore >= 25:
+        if 4 < loop_length <13 and essScore >= 25:
             return True
         elif 13 <= loop_length <15 and essScore >= 45:
             return True
@@ -55,6 +55,15 @@ class ApplyESS:
                                                  self.df["PDB_length"]) 
         self.df.drop(columns=["PDB_length"], 
                                inplace=True)
+    def clustering(self):
+        """
+        Mapping CDR-H3 templates to CDR-H3 clusters
+        CDR-H3 cluster represents most connected CDR-H3 template
+        amongst clustered templates.
+        """
+        df_clusters = pd.read_csv(clusters, sep="\t", index_col=0).reset_index().rename(columns={"clusters":"Clusters"})
+        self.df = self.df.merge(right=df_clusters, left_on="CDR-H3_template", right_on="templates", how="left").drop(columns=["templates"]) 
+
     def save(self):
         self.df.to_csv(self.filename, sep="\t", compression="gzip")
 
@@ -63,5 +72,6 @@ if __name__ == "__main__":
     apply_ess_instance = ApplyESS("../output_structure.txt.gz")
     apply_ess_instance.adding_pdb_length()
     apply_ess_instance.apply_ess()
+    apply_ess_instance.clustering()
     apply_ess_instance.save()
 

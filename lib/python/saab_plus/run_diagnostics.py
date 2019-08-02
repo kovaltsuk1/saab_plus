@@ -136,13 +136,19 @@ class Diagnostics:
             self.logger.error(" Cannot import: Common module")
         try:
             from code.Common.Common import pdb_length_location, template_db,\
-                                            fread_db, numbered_datasets_location
+                                            fread_db, numbered_datasets_location,\
+                                            clusters
             # checking pdb_length
             if not self.file_exist( pdb_length_location ):
                 self.logger.error(" PDB template info file is not found!")
             else:
                 self.logger.info("         PDB template info file is located: OK")
             
+            if not self.file_exist(clusters):
+                self.logger.error(" CDR-H3 cluster mapping file is missing!")
+            else:
+                self.logger.info("    CDR-H3 cluster mapping file is located: OK")
+
             # locating PDB frameworks
             if not self.dir_exist(template_db):
                 self.logger.error(" Directory with PDB frameworks not found")

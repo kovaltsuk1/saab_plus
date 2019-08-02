@@ -28,6 +28,10 @@ template_db = join(where_i_am, "../../data/structures/IMGT/")
 
 # pdb_length 
 pdb_length_location = join(where_i_am, '../../data/pdb_length/pdb_lengths.pkl')
+
+# clustering file
+
+clusters = join(where_i_am, '../../data/pdb_length/clusters.csv')
 definitions = {		
 		
 		"chothia" : {"L1" : ["L24", "L25", "L26", "L27", "L28", "L29", "L30", "L31", "L32", "L33", "L34"], 
