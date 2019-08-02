@@ -36,22 +36,23 @@ SAAB_PLUS_DIAG
 This script generates __diagnostics.log__.  
 If installation was successful, the diagnostics.log should look like:
 ```
-2019-07-29 15:59:18,606 INFO 	Writing DIAGNOSTICS log
+2019-08-02 09:28:02,893 INFO    Writing DIAGNOSTICS log
 
-2019-07-29 15:59:18,684 INFO  Successfully imported: anarci
-2019-07-29 15:59:18,684 INFO  Successfully imported: anarci germlines
-2019-07-29 15:59:18,685 INFO  Successfully imported: anarci Accept
-2019-07-29 15:59:18,686 INFO  Successfully imported: scalop
-2019-07-29 15:59:18,857 INFO  Successfully imported: scalop assing
-2019-07-29 15:59:18,867 INFO  Successfully imported: FREAD
-2019-07-29 15:59:18,867 INFO  Successfully imported: FREAD ESS table
-2019-07-29 15:59:18,867 INFO  Successfully imported: prosci module
-2019-07-29 15:59:18,868 INFO  Successfully imported: Common module
-2019-07-29 15:59:18,868 INFO          PDB template info file is located: OK
-2019-07-29 15:59:18,869 INFO   Directory with PDB frameworks is located: OK
-2019-07-29 15:59:18,870 INFO  Directory with FREAD templates is located: OK
-2019-07-29 15:59:19,516 INFO  Number of FREAD templates found: 3759
-2019-07-29 15:59:19,517 INFO  Directory with numbered PDB frameworks: OK
+2019-08-02 09:28:02,976 INFO  Successfully imported: anarci
+2019-08-02 09:28:02,976 INFO  Successfully imported: anarci germlines
+2019-08-02 09:28:02,977 INFO  Successfully imported: anarci Accept
+2019-08-02 09:28:02,977 INFO  Successfully imported: scalop
+2019-08-02 09:28:03,180 INFO  Successfully imported: scalop assing
+2019-08-02 09:28:03,192 INFO  Successfully imported: FREAD
+2019-08-02 09:28:03,192 INFO  Successfully imported: FREAD ESS table
+2019-08-02 09:28:03,193 INFO  Successfully imported: prosci module
+2019-08-02 09:28:03,194 INFO  Successfully imported: Common module
+2019-08-02 09:28:03,194 INFO          PDB template info file is located: OK
+2019-08-02 09:28:03,194 INFO     CDR-H3 cluster mapping file is located: OK
+2019-08-02 09:28:03,196 INFO   Directory with PDB frameworks is located: OK
+2019-08-02 09:28:03,196 INFO  Directory with FREAD templates is located: OK
+2019-08-02 09:28:03,771 INFO  Number of FREAD templates found: 3759
+2019-08-02 09:28:03,771 INFO  Directory with numbered PDB frameworks: OK
 ```
 If any __ERROR__ were recorded in diagnostics.log, you will not be able to initialise SAAB_PLUS
 ### Running a test example
@@ -77,4 +78,5 @@ SAAB+ outputs a zipped tab-delimited text file.
       CDR-H3_sequence - Sequence of CDR-H3 loop  
                   ESS - FREAD score for the predicted CDR-H3 structure  
            Annotation - Sequnces, whose FREAD CDR-H3 structure prediction scores were above the quality threshold      
+	     Clusters - CDR-H3 clusters (0.6A threshold)
 ```
