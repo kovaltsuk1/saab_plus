@@ -4,8 +4,8 @@ from distutils.core import setup
 import distutils
 import os, sys
 
-#if sys.argv[1] != "install":
-#    sys.exit(0)
+if sys.argv[1] != "install":
+    sys.exit(0)
 if sys.version_info.major != 2:
     raise AssertionError("Currently only python 2.7 version is supported. Python 3 version will be released soon\nUse python2 setup.py instead")
 
