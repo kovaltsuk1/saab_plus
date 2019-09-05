@@ -36,23 +36,25 @@ SAAB_PLUS_DIAG
 This script generates __diagnostics.log__.  
 If installation was successful, the diagnostics.log should look like:
 ```
-2019-08-02 09:28:02,893 INFO    Writing DIAGNOSTICS log
+2019-09-05 12:36:35,736 INFO    Writing DIAGNOSTICS log
 
-2019-08-02 09:28:02,976 INFO  Successfully imported: anarci
-2019-08-02 09:28:02,976 INFO  Successfully imported: anarci germlines
-2019-08-02 09:28:02,977 INFO  Successfully imported: anarci Accept
-2019-08-02 09:28:02,977 INFO  Successfully imported: scalop
-2019-08-02 09:28:03,180 INFO  Successfully imported: scalop assing
-2019-08-02 09:28:03,192 INFO  Successfully imported: FREAD
-2019-08-02 09:28:03,192 INFO  Successfully imported: FREAD ESS table
-2019-08-02 09:28:03,193 INFO  Successfully imported: prosci module
-2019-08-02 09:28:03,194 INFO  Successfully imported: Common module
-2019-08-02 09:28:03,194 INFO          PDB template info file is located: OK
-2019-08-02 09:28:03,194 INFO     CDR-H3 cluster mapping file is located: OK
-2019-08-02 09:28:03,196 INFO   Directory with PDB frameworks is located: OK
-2019-08-02 09:28:03,196 INFO  Directory with FREAD templates is located: OK
-2019-08-02 09:28:03,771 INFO  Number of FREAD templates found: 3759
-2019-08-02 09:28:03,771 INFO  Directory with numbered PDB frameworks: OK
+2019-09-05 12:36:35,804 INFO  Successfully imported: anarci
+2019-09-05 12:36:35,804 INFO  Successfully imported: anarci germlines
+2019-09-05 12:36:35,805 INFO  Successfully imported: anarci Accept
+2019-09-05 12:36:35,805 INFO  Successfully imported: scalop
+2019-09-05 12:36:35,969 INFO  Successfully imported: scalop assing
+2019-09-05 12:36:35,980 INFO  Successfully imported: FREAD
+2019-09-05 12:36:35,980 INFO  Successfully imported: FREAD ESS table
+2019-09-05 12:36:35,980 INFO  Successfully imported: prosci module
+2019-09-05 12:36:35,981 INFO  Successfully imported: Common module
+2019-09-05 12:36:35,981 INFO          PDB template info file is located: OK
+2019-09-05 12:36:35,981 INFO     CDR-H3 cluster mapping file is located: OK
+2019-09-05 12:36:35,982 INFO   Directory with PDB frameworks is located: OK
+2019-09-05 12:36:35,982 INFO  Directory with FREAD templates is located: OK
+2019-09-05 12:36:36,655 INFO  Number of FREAD templates found: 3759
+2019-09-05 12:36:36,655 INFO  Directory with numbered PDB frameworks: OK
+2019-09-05 12:36:36,922 INFO  Imported pandas, Version 0.24.2
+2019-09-05 12:36:36,923 INFO  Imported Bio, Version 1.70
 ```
 If any __ERROR__ were recorded in diagnostics.log, you will not be able to initialise SAAB_PLUS
 ### Running a test example
