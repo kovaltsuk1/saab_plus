@@ -121,10 +121,25 @@ class Annotation(object):
         return Counter(str(rec.seq) for rec in records)
 
     def convert_fasta_to_frame(self):
-        "converting fasta file to pandas dataframe"
-        df = pd.DataFrame( self.unique_aa().items() , columns=["Protein_Seq", "Redundancy"])
+        """
+        Converting fasta file to pandas dataframe
+        If your input is not fasta file,
+        please modify this method accordingly.
+        ----------
+        Parameters
+            self.unique_aa - converts FASTA file to dictionary.
+                             Key is the unique antibody sequence and
+                             Value is the number of repeats
+        ----------
+        Returns
+            self.gzipped -   GZipped DataFrame that is turned into
+                             an iterator later on for SAAB+ analysis
+        """
+        df = pd.DataFrame( self.unique_aa().items(),
+                                    columns=["Protein_Seq", "Redundancy"])
         self.gziped = "{0}_df.txt.gz".format(self.filename)
         df.to_csv(self.gziped, sep = "\t", compression="gzip")
+        return self
 
     def run(self):
         # Starting anarci parsing
@@ -162,12 +177,10 @@ class Annotation(object):
 
         # Quality filters
         apply_ess_instance = ApplyESS(os.path.join(self.output_dir, self.output_name+".gz") )
-        apply_ess_instance.adding_pdb_length()
-        apply_ess_instance.apply_ess()
+        apply_ess_instance.adding_pdb_length.apply_ess()
         
         logging.info("\tApplying clustering")
-        apply_ess_instance.clustering()
-        apply_ess_instance.save()
+        apply_ess_instance.clustering().save()
         logging.info("\touput_file is: {0}".format(os.path.join(self.output_dir, self.output_name+".gz")))
         logging.info("\n\n\t\tDONE!\n\n")
         print "\n\tDone!\n"
@@ -228,5 +241,5 @@ if __name__ == "__main__":
 
     arguments = printStatus(args)
     STUDY = Annotation(arguments)
-    STUDY.convert_fasta_to_frame()
-    STUDY.run()
+    STUDY.convert_fasta_to_frame().run()
+

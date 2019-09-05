@@ -23,13 +23,14 @@ def parsecdr(numcdrseq):
             bigcdrseq.append([_pos,res])
     return bigcdrseq
 
-#Find the best sequence identity and the corresponding template -- this is chiefly used to get region annotatinos like full sequence, framework etc. 
 def get_best_match(query,structures,region=None):
+    """
+    Finding the framework with the highest sequence identity
+    """
     curr_best_sid = 0
     curr_best_pdb = 0		
     j = 0
     for struc in structures:  
-        #Compare heavy to heavy and light to light...
         if query[1] == structures[struc][1]:
             j+=1
             """
@@ -39,7 +40,6 @@ def get_best_match(query,structures,region=None):
             if sid> curr_best_sid:
                 curr_best_sid = sid
                 curr_best_pdb = struc
-    #Results object	
     results = {'best_sid':curr_best_sid,
                'best_pdb':curr_best_pdb}
     return results
@@ -81,13 +81,14 @@ def align_single_sequence(queries, structures, chain):
         can = {}
 
         #Get best framework pdb_template
-        full_results = get_best_match(query[1],structures)
-        CDRSequences = extract_cdrs(query[1][0])
+        full_results = get_best_match(query.numbering, 
+                                      structures)
+        CDRSequences = extract_cdrs(query.numbering[0])
         CDR3Sequence = CDRSequences.get("H3", None)
         if "best_pdb" not in full_results:
             # if we cannot find framework match
-            output_dict[query[0]] = ("None", can, query[2]["Redundancy"],
-                                     "None", CDR3Sequence, 0)
+            output_dict[query.sequence] = ("None", can, query.sequencemeta["Redundancy"],
+                                           "None", CDR3Sequence, 0)
             continue
         # FREAD
         if CDR3Sequence:
@@ -95,16 +96,16 @@ def align_single_sequence(queries, structures, chain):
                 fread_results, essScore = get_best_cdr_match( CDRSequences, full_results['best_pdb'], chain)
             except:
                 essScore = 0
-                logging.error("\tFREAD could not run: {0}".format(query[0]))
+                logging.error("\tFREAD could not run: {0}".format(query.sequence))
         else:
             essScore = 0
             CDR3Sequence = ""
 
         # SCALOP
         for canonical in ["H1", "H2"]:
-            if query[2].get(canonical, None):
+            if query.sequencemeta.get(canonical, None):
                 try:
-                    _,_,_can,_ = _assign(parsecdr(query[2][canonical].items()), canonical,
+                    _,_,_can,_ = _assign(parsecdr(query.sequencemeta[canonical].items()), canonical,
                                          'imgt', 'imgt', 'latest')
                     can[canonical] = _can
                 except:
@@ -113,15 +114,15 @@ def align_single_sequence(queries, structures, chain):
         # Recording outputs
         try:
             if fread_results:
-                output_dict[query[0]] = (fread_results[formatDict[chain]["CDR3"]], can, 
-                                         query[2]["Redundancy"], full_results['best_pdb'], 
+                output_dict[query.sequence] = (fread_results[formatDict[chain]["CDR3"]], can, 
+                                         query.sequencemeta["Redundancy"], full_results['best_pdb'], 
                                          CDR3Sequence, essScore)
             else:
-                output_dict[query[0]] = ("None", can, query[2]["Redundancy"], 
-                                        full_results['best_pdb'], CDR3Sequence, essScore)
+                output_dict[query.sequence] = ("None", can, query.sequencemeta["Redundancy"], 
+                                               full_results['best_pdb'], CDR3Sequence, essScore)
         except IndexError:
-            output_dict[query[0]] = ("None", can, query[2]["Redundancy"], 
-                                        full_results['best_pdb'], CDR3Sequence, essScore)
+            output_dict[query.sequence] = ("None", can, query.sequencemeta["Redundancy"], 
+                                           full_results['best_pdb'], CDR3Sequence, essScore)
     return (output_dict, "_")
 
 if __name__ == '__main__':

@@ -27,7 +27,7 @@ template_db = join(where_i_am, "../../data/structures/IMGT/")
 #structures_location = join(where_i_am,'../../data/structures/IMGT')
 
 # pdb_length 
-pdb_length_location = join(where_i_am, '../../data/pdb_length/pdb_lengths.pkl')
+pdb_length_location = join(where_i_am, '../../data/pdb_length/pdb_lengths.csv')
 
 # clustering file
 

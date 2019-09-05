@@ -1,9 +1,13 @@
 
 def oas_output_parser(numbered):
+    """
+    Converting OAS output format into
+    SAAB+ input format
+    """
     saab_input = dict()
     for region in numbered:
         if "cdr" not in region:
-            CDR= False
+            CDR = False
             if region[2] == "h":
                     chain = "H"
             else:
@@ -13,7 +17,7 @@ def oas_output_parser(numbered):
                     chain = "H"
             else:
                     chain = "L"
-            CDR =chain+region[-1]
+            CDR = chain+region[-1]
         for position in numbered[region]:
             try:
                 saab_input[int(position),"",chain] = (numbered[region][position], CDR)

@@ -5,6 +5,8 @@ installed
 import os
 import logging
 from shutil import copyfile
+from distutils.version import LooseVersion
+import importlib
 
 class Diagnostics:
     def __init__(self):
@@ -24,6 +26,7 @@ class Diagnostics:
         self.check_scalop()
         self.check_fread()
         self.check_fread_db()
+        self.check_dependencies()
         print "Diagnostics log is found in diagnostics.log"
 
     def check_anarci(self):
@@ -173,6 +176,29 @@ class Diagnostics:
                     self.logger.error(" Directory with numbered PDB frameworks: empty!!!")
         except ImportError:
             self.logger.error(" Cannot import PATHs from Common module")
+
+    def check_dependencies(self):
+        """
+        Checking if a user has Biopython and pandas
+        """
+        dependencies = [("pandas", "0.24.2"),
+                        ("Bio", "1.70")]
+        for lib, version in dependencies:
+            try:
+#                globals()[lib] = importlib.import_module(lib)
+                 imported_lib = importlib.import_module(lib)
+                 imported_version = imported_lib.__version__ 
+                 if LooseVersion(imported_version) < LooseVersion(version):
+                    self.logger.warning(" Package version is older than recommended for : {0}".format(imported_lib.__name__)) 
+                    self.logger.warning(" Imported version is {0}, recomimended {1}".format( imported_version, version))
+                    print "WARGNING: {0} version is older than recommended".format(imported_lib.__name__)
+                    
+                 else:
+                    self.logger.info(" Imported {0}, Version {1}".format( imported_lib.__name__, imported_lib.__version__))
+
+            except:
+                self.logger.error(" Cannot import package: ", lib)
+                print "Cannot import: ", lib
 
 if __name__ == "__main__":
     diagnostics = Diagnostics()
