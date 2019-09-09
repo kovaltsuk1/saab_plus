@@ -91,14 +91,18 @@ class Main(object):
     def remove_stars(self, in_list):
         return [x for x in in_list if "*" not in x[0] and len(x[0]) < 152]
 
+    def _open_dataframe(self):
+
+        self.df = pd.read_csv(self.input_file, sep="\t",
+                              iterator=True, chunksize=self.rate_of_analysis,
+                                                                index_col=0)
     def run(self):
         check_anarci()
+        self._open_dataframe()
 	count = 0
 	count_correct = 0
-        df = pd.read_csv(self.input_file, sep="\t",
-                            iterator=True, chunksize=self.rate_of_analysis,
-                                                                index_col=0)
-        df_data, df_count = tee(df)        
+        
+        df_data, df_count = tee(self.df)        
         num_of_entries = self.find_seq_number(df_count)
 
 	for chunk in df_data:

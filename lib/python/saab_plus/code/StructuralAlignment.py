@@ -69,7 +69,49 @@ def get_best_cdr_match( cdrs , fread_template, chain):
     essScore = fread_results[maxESSminCA][1]["scr"]
     results= { formatDict[chain]["CDR3"]:fread_results[maxESSminCA][1]["str"] }
     return results, essScore
-	
+
+def fetch_canonicals(query):
+    """
+    Function to structurally annotate canonical 
+    classes.
+    Passing numbered canonical class sequences
+    """
+    can = {}
+    for canonical in ["H1", "H2"]:
+        if query.sequencemeta.get(canonical, None):
+            try:
+                _,_,_can,_ = _assign(parsecdr(query.sequencemeta[canonical].items()), canonical,
+                                                                        'imgt', 'imgt', 'latest')
+                can[canonical] = _can
+            except:
+                can[canonical] = "None"
+        else:
+            can[canonical] = "None"
+    return can
+
+def init_fread(CDRSequences, full_results, chain):
+    """
+    Initiating FREAD template prediction
+    -----------
+    Parameters
+        CDRSequences - Dictionary that contains CDR-H3 loop sequence
+                       e.g. {H3:"ARFDY"}
+        full_results - Dictionary that has the pdb code for the 
+                       framework match. It will be used in loop grafting
+               chain - Antibody chain information (e.g. H)
+    ------------
+    Returns
+        fread_results - Best predicted PDB template
+             essScore - ESS score for the selected FREAD template
+    """
+    try:
+        fread_results, essScore = get_best_cdr_match( CDRSequences, full_results['best_pdb'], chain)
+    except:
+        essScore = 0
+        fread_results = False
+        logging.error("\tFREAD could not run: {0}".format(query.sequence))
+    return fread_results, essScore
+
 def align_single_sequence(queries, structures, chain):
     """
     Function that annotates anarci numbered sequences
@@ -78,11 +120,10 @@ def align_single_sequence(queries, structures, chain):
     output_dict = {}
     for query in queries:
         fread_results = False
-        can = {}
 
         #Get best framework pdb_template
         full_results = get_best_match(query.numbering, 
-                                      structures)
+                                           structures)
         CDRSequences = extract_cdrs(query.numbering[0])
         CDR3Sequence = CDRSequences.get("H3", None)
         if "best_pdb" not in full_results:
@@ -92,24 +133,13 @@ def align_single_sequence(queries, structures, chain):
             continue
         # FREAD
         if CDR3Sequence:
-            try:
-                fread_results, essScore = get_best_cdr_match( CDRSequences, full_results['best_pdb'], chain)
-            except:
-                essScore = 0
-                logging.error("\tFREAD could not run: {0}".format(query.sequence))
+            fread_results, essScore = init_fread(CDRSequences, full_results, chain) 
         else:
             essScore = 0
             CDR3Sequence = ""
 
         # SCALOP
-        for canonical in ["H1", "H2"]:
-            if query.sequencemeta.get(canonical, None):
-                try:
-                    _,_,_can,_ = _assign(parsecdr(query.sequencemeta[canonical].items()), canonical,
-                                         'imgt', 'imgt', 'latest')
-                    can[canonical] = _can
-                except:
-                    can[canonical] = "None"
+        can = fetch_canonicals(query) 
 
         # Recording outputs
         try:

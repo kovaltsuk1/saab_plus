@@ -2,3 +2,4 @@ EXAMPLE
 dist/*
 MANIFEST
 build
+diagnostics.log
