@@ -42,13 +42,16 @@ def anarci_fun(list_of_inputs, ncores):
 class Main(object):
     """
     Class that initiates structural filtering analysis.
-        @input_file: txt file where antibody amino acid sequences are
+    --------------
+    Parameters
+        input_file - txt file where antibody amino acid sequences are
                      in the column with Protein_Seq as a header
-        @ncpu: number of cores used 
-        @chain: H at the moment
-        @species: human as default
-    outputs:
-        @output_name: txt file that contains anarci parsed and numbered sequences
+              ncpu - number of cores used 
+             chain - H at the moment
+           species - human as default
+    --------------
+    Return
+        output_name - txt file that contains anarci parsed and numbered sequences
     """
     def __init__(self, input_file, ncpu=4, chain="H", 
                 species="human", output_name="test_anarciparsed.txt", output_dir="."):
@@ -78,7 +81,15 @@ class Main(object):
         "Function that writes temporary outputs to a csv file"
         rows = []
         for entry in to_csv_list:
-            rows.append([ entry[0], entry[1], entry[2],"Unknown","Unknown", entry[3],entry[4], entry[5], entry[6]])
+            rows.append([ entry.input_seq, 
+                          entry.redundancy,
+                          entry.CDRH3,
+                          "Unknown",
+                          "Unknown", 
+                          entry.IG_V,
+                          entry.IG_J,
+                          entry.numbered, 
+                          entry.seqID])
         with open(join(self.output_dir, self.output_name), "ab") as csv_file:
             writer = csv.writer(csv_file, delimiter=',')
             writer.writerows(rows)
