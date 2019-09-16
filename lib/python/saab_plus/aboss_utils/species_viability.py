@@ -1,6 +1,7 @@
 from collections import defaultdict, namedtuple
 from saab_plus.aboss_utils.region_definitions import Accept
 from saab_plus.code.Common.Common import numbered_germlines
+import cPickle as pickle
 import json
 
 list_of_frames ={
@@ -141,7 +142,7 @@ def check_heavy_chain_missing_pos(residue, frame, position_meta,
         if str(residue) == "118":
             position_meta["conserved_position"] += 1
 
-def checking_structural_viability(numbering, species, chain):
+def checking_structural_viability(numbering, species, chain, anarci_genes):
     """
     The main function of ANARCI parsing. Here we check for unusual indels in antibody regions across different species. We also check if the first numbered position of the amino acid sequence starts before postion 23
     -------------
@@ -170,7 +171,7 @@ def checking_structural_viability(numbering, species, chain):
         region = ''
         a.set_regions([frame])
         for n in range(len(numbering)):
-            residue = numbering[n]
+            residue = list(numbering[n])
             if a.accept(residue[0], chain) != 1:
                 continue
                     
@@ -375,18 +376,20 @@ def checking_sequence_viability(anarci_output, species_matrix, input_sequences_l
         if not viable_outputs(anarci_output[u]):
             continue
         else:
-            aa, status, regions = checking_structural_viability(anarci_output[u][0][0],
+            # Here we check for the correct antibody chain 
+            IG_V, IG_J, IGH_IGJ_status = check_IMGT_alignment(species_matrix[u],
                                                                 species, chain)
+            if IGH_IGJ_status == None:
+                continue
+
+            aa, status, regions = checking_structural_viability(anarci_output[u][0][0],
+                                                                species, chain, {"IG_V": IG_V,
+                                                                                 "IG_J": IG_J})
             # if antibody sequence fails anarci
             if status != "good":
                 continue
             # Some sequences have very long fw4 regions or duplicated fw4 regions
             if len(input_sequences_list[u][0][input_sequences_list[u][0].rfind(regions[list_of_frames[chain][-1]]):]) > 13 or input_sequences_list[u][0].count(regions[list_of_frames[chain][-1]]) > 1:
-                continue
-            # Here we check for the correct antibody chain 
-            IG_V, IG_J, IGH_IGJ_status = check_IMGT_alignment(species_matrix[u],
-                                                                species, chain)
-            if IGH_IGJ_status == None:
                 continue
             anarci_parsed[input_sequences_list[u][0]] = json.dumps(aa)
             V_gene_dict[IG_V] = 1

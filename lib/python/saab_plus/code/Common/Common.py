@@ -31,6 +31,7 @@ pdb_length_location = join(where_i_am, '../../data/pdb_length/pdb_lengths.csv')
 
 numbered_germlines = join(where_i_am, '../../data/amino_sub/numbered_germline_genes.pkl')
 
+numbered_germlines = join(where_i_am, '../../data/amino_sub/numbered_germline_genes.pkl')
 # clustering file
 
 clusters = join(where_i_am, '../../data/pdb_length/clusters.csv')

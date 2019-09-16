@@ -135,13 +135,12 @@ class RunSaab(object):
             for portion in correct_sequences_portion:
                 for seq in portion[0]:
                     txtFile.write("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\n".format(seq, 
-                                                                             portion[0][seq][0], 
-                                                                             portion[0][seq][1], 
-                                                                             portion[0][seq][2], 
-                                                                             portion[0][seq][3],
-                                                                             portion[0][seq][4],
-                                                                             portion[0][seq][5]))
-
+                                                                             portion[0][seq].CDR_H3_template, 
+                                                                             portion[0][seq].Canonical_classes, 
+                                                                             portion[0][seq].Redundancy, 
+                                                                             portion[0][seq].Framework_template,
+                                                                             portion[0][seq].CDR_H3_sequence,
+                                                                             portion[0][seq].ESS))
     def to_skip(self):
         """
         Loading already structurally annotated DataFrame

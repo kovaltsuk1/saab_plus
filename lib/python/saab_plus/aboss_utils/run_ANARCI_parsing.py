@@ -23,7 +23,7 @@ def check_anarci():
     else:
         logging.info("\tNot sure about anarci version")
 
-def anarci_fun(list_of_inputs, ncores):
+def anarci_fun(list_of_inputs, ncores, allowed_species = None):
     """
     ANARCI running function
         @list_of_inputs: List of antibody sequences
@@ -33,7 +33,10 @@ def anarci_fun(list_of_inputs, ncores):
     """
     list_for_anarci_parsing = [("scFv"+str(n), list_of_inputs[n][0]) for n in range(len(list_of_inputs))]
     try:
-        output = run_anarci(list_for_anarci_parsing, scheme='imgt', assign_germline = True, ncpu= ncores)
+        output = run_anarci(list_for_anarci_parsing, scheme ='imgt', 
+                                                     assign_germline = True, 
+                                                     ncpu = ncores, 
+                                                     allowed_species = allowed_species)
     except:
         logging.error("\tANARCI parsing failed to parse this chunk of sequences")
         output = []
@@ -122,7 +125,7 @@ class Main(object):
             if not inputs:
                 continue
             inputs = self.remove_stars(inputs)
-            output = anarci_fun(inputs, self.ncpu)
+            output = anarci_fun(inputs, self.ncpu, allowed_species = [self.species] )
 
             if not output:
                 continue
