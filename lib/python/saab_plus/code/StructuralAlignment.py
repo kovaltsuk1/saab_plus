@@ -7,6 +7,14 @@ import numpy as np
 from scalop.inhouse_predict import _assign
 from string import ascii_letters
 import logging
+from collections import namedtuple
+
+output_tuple = namedtuple("output_tuple",["CDR_H3_template",
+                                         "Canonical_classes",
+                                         "Redundancy",
+                                         "Framework_template",
+                                         "CDR_H3_sequence",
+                                         "ESS"])
 
 formatDict= { "Light":{"CDR3":"L3","CDR1":"L1","CDR2":"L2"},
               "Heavy":{"CDR3":"H3", "CDR1":"H1","CDR2":"H2" } 
@@ -144,15 +152,26 @@ def align_single_sequence(queries, structures, chain):
         # Recording outputs
         try:
             if fread_results:
-                output_dict[query.sequence] = (fread_results[formatDict[chain]["CDR3"]], can, 
-                                         query.sequencemeta["Redundancy"], full_results['best_pdb'], 
-                                         CDR3Sequence, essScore)
+                output_dict[query.sequence] = output_tuple(CDR_H3_template = fread_results[formatDict[chain]["CDR3"]],
+                                                           Canonical_classes = can,
+                                                           Redundancy = query.sequencemeta["Redundancy"], 
+                                                           Framework_template = full_results['best_pdb'],
+                                                           CDR_H3_sequence = CDR3Sequence, 
+                                                           ESS = essScore)
             else:
-                output_dict[query.sequence] = ("None", can, query.sequencemeta["Redundancy"], 
-                                               full_results['best_pdb'], CDR3Sequence, essScore)
+                output_dict[query.sequence] = output_tuple(CDR_H3_template = "None",
+                                                           Canonical_classes = can,
+                                                           Redundancy = query.sequencemeta["Redundancy"], 
+                                                           Framework_template = full_results['best_pdb'],
+                                                           CDR_H3_sequence = CDR3Sequence, 
+                                                           ESS = essScore)
         except IndexError:
-            output_dict[query.sequence] = ("None", can, query.sequencemeta["Redundancy"], 
-                                           full_results['best_pdb'], CDR3Sequence, essScore)
+            output_dict[query.sequence] = output_tuple(CDR_H3_template = "None",
+                                                           Canonical_classes = can,
+                                                           Redundancy = query.sequencemeta["Redundancy"], 
+                                                           Framework_template = full_results['best_pdb'],
+                                                           CDR_H3_sequence = CDR3Sequence, 
+                                                           ESS = essScore)
     return (output_dict, "_")
 
 if __name__ == '__main__':
