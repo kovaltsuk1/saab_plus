@@ -1,5 +1,6 @@
 from collections import defaultdict, namedtuple
 from saab_plus.aboss_utils.region_definitions import Accept
+from saab_plus.code.Common.Common import numbered_germlines
 import json
 
 list_of_frames ={
@@ -7,6 +8,9 @@ list_of_frames ={
         "L":["cdrl3","fwl1", "cdrl1", "fwl2", "cdrl2", "fwl3","fwl4"]}
 
 good_aminos = sorted(list("QWERTYIPASDFGHKLCVNM"))
+
+with open(numbered_germlines, "rb") as gg:
+    numbered_germlines = pickle.load(gg)
 
 output_tuple = namedtuple("output_tuple","input_seq redundancy CDRH3 IG_V IG_J numbered seqID")
 
@@ -104,7 +108,6 @@ def rabbit_length_check_fw1(fw,all_region_aa,rabbit_position_2,quality):
             quality = ("Bad", "FW1 length is shorter IMGT defined")
     return quality
 
-
 def check_light_chain_missing_pos(residue, frame, position_meta):
 
     if frame == "fwl1":
@@ -168,38 +171,60 @@ def checking_structural_viability(numbering, species, chain):
         a.set_regions([frame])
         for n in range(len(numbering)):
             residue = numbering[n]
-            if a.accept(residue[0], chain) == 1:
+            if a.accept(residue[0], chain) != 1:
+                continue
+                    
+            if residue[1] == "X":
+                if residue[0][0] == 73:
+                    residue[1] = "-"
+                    continue
 
-                # Checking for non-amino acid entries
+                if frame[0].lower() == "f":
+
+                    # if X found in framework we replace it with germline amino acid
+                    if frame[-1] == "4":
+                        residue[1] = numbered_germlines[anarci_genes["IG_J"]][residue[0][0]]
+                    else:
+                        residue[1] = numbered_germlines[ anarci_genes["IG_V"]][residue[0][0]]
+                else:
+                    # if X found in CDR-H3 we return sequence as bad
+                    if frame.lower() == "cdrh3":
+                        quality = ("Bad", "X in CDR-H3 at position {0}".format(residue))
+                        return None, quality, None
+                    else:
+                        # If X found in canonical CDR, we skip it.
+                        residue[1] = "-"
+                        continue
+            else:
                 if not check_amino_viability(residue[1]):
-                    quality = ("Bad", "Non-amino acid")
+                    quality = ("Bad", "Weird amino acid")
                     return None, quality, None
 
-                # Checking for missing amino acids
-                if check_skip(residue[1]):
-                    continue
-                # Here we check for indels outside canonical CDR
-                if residue[0][1] != ' ':
+            # Checking for missing amino acids
+            if check_skip(residue[1]):
+                continue
+            # Here we check for indels outside canonical CDR
+            if residue[0][1] != ' ':
 
-                    all_region_aa[frame][str(residue[0][0]) + residue[0][1]] = residue[1]
-                    if frame != CDR3[chain]:
-                        quality = ("Bad", str(residue[0][0]) + residue[0][1])
-                        return None,quality,None
-                else:
-                        all_region_aa[frame][str(residue[0][0])] = residue[1]
+                all_region_aa[frame][str(residue[0][0]) + residue[0][1]] = residue[1]
+                if frame != CDR3[chain]:
+                    quality = ("Bad", str(residue[0][0]) + residue[0][1])
+                    return None,quality,None
+            else:
+                    all_region_aa[frame][str(residue[0][0])] = residue[1]
 
-                        # Here we record the key positions that must be present in the antibody sequence
-                        # We need to account for positions such as 73 that are often not present
-                        # In light chain, positions 81 and 82 are often absent
-                        # Position 118 tells us if numbering of CDR-H3 was successful
-                        if chain == "L":
-                            check_light_chain_missing_pos(residue[0][0], frame, position_meta)
-                        elif chain == "H":
-                            check_heavy_chain_missing_pos(residue[0][0], frame, position_meta,
-                                                                                species)
-                # Here we record amino acid sequences
-                # of the antibody regions
-                region += residue[1]
+                    # Here we record the key positions that must be present in the antibody sequence
+                    # We need to account for positions such as 73 that are often not present
+                    # In light chain, positions 81 and 82 are often absent
+                    # Position 118 tells us if numbering of CDR-H3 was successful
+                    if chain == "L":
+                        check_light_chain_missing_pos(residue[0][0], frame, position_meta)
+                    elif chain == "H":
+                        check_heavy_chain_missing_pos(residue[0][0], frame, position_meta,
+                                                                            species)
+            # Here we record amino acid sequences
+            # of the antibody regions
+            region += residue[1]
         regions[frame] = region
 
     # if we do not have the key conserved positions, we stop       

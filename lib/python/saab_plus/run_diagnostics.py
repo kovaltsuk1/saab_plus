@@ -140,7 +140,7 @@ class Diagnostics:
         try:
             from code.Common.Common import pdb_length_location, template_db,\
                                             fread_db, numbered_datasets_location,\
-                                            clusters
+                                            clusters, numbered_germlines
             # checking pdb_length
             if not self.file_exist( pdb_length_location ):
                 self.logger.error(" PDB template info file is not found!")
