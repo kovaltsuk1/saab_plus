@@ -89,7 +89,7 @@ def fetch_canonicals(query):
         if query.sequencemeta.get(canonical, None):
             try:
                 _,_,_can,_ = _assign(parsecdr(query.sequencemeta[canonical].items()), canonical,
-                                                                        'imgt', 'imgt', 'latest')
+                                                                        'imgt', 'imgt', '2018-06') # Running SCALOP with 2018-06 version
                 can[canonical] = _can
             except:
                 can[canonical] = "None"

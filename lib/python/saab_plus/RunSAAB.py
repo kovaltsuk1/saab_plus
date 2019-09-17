@@ -134,9 +134,10 @@ class RunSaab(object):
         with open(self.output_name, "a") as txtFile:
             for portion in correct_sequences_portion:
                 for seq in portion[0]:
-                    txtFile.write("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\n".format(seq, 
+                    txtFile.write("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\n".format(seq, 
                                                                              portion[0][seq].CDR_H3_template, 
-                                                                             portion[0][seq].Canonical_classes, 
+                                                                             portion[0][seq].Canonical_classes["H1"],
+                                                                             portion[0][seq].Canonical_classes["H2"],
                                                                              portion[0][seq].Redundancy, 
                                                                              portion[0][seq].Framework_template,
                                                                              portion[0][seq].CDR_H3_sequence,

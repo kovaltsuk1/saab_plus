@@ -21,7 +21,7 @@ class ApplyESS:
             raise AssertionError("File does not exist: ", self.filename)
         self.df = pd.read_csv(self.filename, sep="\t", header=None,
                                     names=["Protein_Seq", "CDR-H3_template", 
-                                           "Canonical_classes", "Redundancy",
+                                           "H1", "H2", "Redundancy",
                                            "Framework_template", "CDR-H3_sequence", 
                                            "ESS"])
         # Vectorized check_ess for speed

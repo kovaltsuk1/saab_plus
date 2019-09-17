@@ -69,7 +69,8 @@ from saab_plus.aboss_utils.run_ANARCI_parsing import Main
 from Bio import SeqIO
 from collections import Counter
 from saab_plus.RunSAAB import RunSaab
-from saab_plus.code.apply_ess_cutoff import ApplyESS
+from saab_plus.code.apply_ess_cutoff import ApplyESS 
+from saab_plus.code.add_germ_canonicals import AddGermCan
 from saab_plus.run_diagnostics import Diagnostics 
 
 class Annotation(object):
@@ -83,6 +84,7 @@ class Annotation(object):
         self.chain = arguments["chain"]
         self.output_name = arguments["output_name"]
         self.output_dir = arguments["output_dir"]
+        self.germ_canonicals = False
         print "SAAB plus log is found in saab_plus.log"
         
         if not self.pass_diagnostics():
@@ -135,8 +137,14 @@ class Annotation(object):
             self.gzipped -   GZipped DataFrame that is turned into
                              an iterator later on for SAAB+ analysis
         """
-        df = pd.DataFrame( self.unique_aa().items(),
-                                    columns=["Protein_Seq", "Redundancy"])
+        try:
+            df = pd.read_csv(self.filename, sep="\t",
+                                 header=0, index_col = 0).drop_duplicates("Protein_Seq")
+            df["Redundancy"] = 1 # for now
+            self.germ_canonicals = True
+        except:
+            df = pd.DataFrame( self.unique_aa().items(),
+                                        columns=["Protein_Seq", "Redundancy"])
         self.gziped = "{0}_df.txt.gz".format(self.filename)
         df.to_csv(self.gziped, sep = "\t", compression="gzip")
         return self
@@ -152,7 +160,6 @@ class Annotation(object):
                              output_dir =".", 
                              output_name = "anarci_parsed.txt") 
         anarci_parsing.run()
-        os.remove(self.gziped)
 
         print "\n\tanarci parsing is done\n"
         logging.info("\tANARCI parsing is finished")
@@ -170,7 +177,6 @@ class Annotation(object):
                                 self.output_dir) 
 
         saab_instance.initiate_SAAB(self.ncores)
-        os.remove(anarci_gzip_file)
 
         logging.info("\tSAAB+ is finished")
         logging.info("\tApplying quality filters")
@@ -181,6 +187,20 @@ class Annotation(object):
         
         logging.info("\tApplying clustering")
         apply_ess_instance.clustering().save()
+        
+        if self.germ_canonicals:
+            print "Adding germline canonical classes. SCALOP version 2018-06"
+            logging.info("\tAdding germline canonical classes. SCALOP version 2018-06")
+            germline_addition = AddGermCan( os.path.join(self.output_dir, self.output_name+".gz"),
+                                            self.gziped)
+            germline_addition.merge_V_Gene().merge_germ_can().save()
+        else:
+            print "Cannot add germline canonical classes. FASTA file was used as input"
+            logging.info("\tCannot add germline canonical classes. FASTA file was used as input")
+
+        os.remove(self.gziped)
+        os.remove(anarci_gzip_file)
+
         logging.info("\touput_file is: {0}".format(os.path.join(self.output_dir, self.output_name+".gz")))
         logging.info("\n\n\t\tDONE!\n\n")
         print "\n\tDone!\n"
