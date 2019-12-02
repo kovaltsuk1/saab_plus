@@ -41,7 +41,8 @@ description="""
 
           Protein_Seq - Full antibody amino acid sequences
       CDR-H3_template - FREAD PDB templates
-    Canonical_classes - Canonical Classes Clusters
+   H1_Canonical_Class - SCALOP predicted CDR-H1 canonical class
+   H2_Canonical_Class - SCALOP predicted CDR-H2 canonical class
            Redundancy - Number of Proiten_Seq copies in the
                         input fasta file
    Framework_template - PDB template used in CDR-H3 
