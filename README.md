@@ -74,7 +74,8 @@ SAAB+ outputs a zipped tab-delimited text file.
 ```
           Protein_Seq - Full antibody amino acid sequences. Only sequences that passed anarci structural viability assessment are retained.  
       CDR-H3_template - CDR-H3 structure that was predicted by FREAD  
-    Canonical_classes - SCALOP predicted non-CDR-H3 canonical classes  
+   H1_Canonical_Class - SCALOP predicted CDR-H1 canonical class
+   H2_Canonical_Class - SCALOP predicted CDR-H2 canonical class
            Redundancy - Number of Proiten_Seq copies in the input fasta file  
    Framework_template - PDB structure that was used in CDR-H3 structure prediction  
       CDR-H3_sequence - Sequence of CDR-H3 loop  

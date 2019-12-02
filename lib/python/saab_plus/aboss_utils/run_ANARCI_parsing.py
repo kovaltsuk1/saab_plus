@@ -1,13 +1,11 @@
 from anarci import run_anarci, all_germlines
-import os
 import multiprocessing as mp
 from os.path import join
-import csv, sys
+import csv, sys, os
 from itertools import tee
-import numpy as np
-import pandas as pd
+import numpy as np, pandas as pd
 from saab_plus.aboss_utils.species_viability import checking_structural_viability, checking_sequence_viability,\
-                                                                        list_of_frames, CDR3, FW1, FW3
+                                                                        list_of_frames, CDR3, FW1 
 from argparse import ArgumentParser
 csv.field_size_limit(sys.maxsize)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -15,6 +13,8 @@ from saab_plus.aboss_utils.ProgressBar import returnProgress
 import logging
 
 def check_anarci():
+
+    # Recording ANARCI version used
     logging.info("\tchecking version of anarci used")
     if len(all_germlines["V"]["H"]["human"]) >= 203:
         logging.info("\tANARCI version 1.3 is used")
@@ -26,14 +26,17 @@ def check_anarci():
 def anarci_fun(list_of_inputs, ncores):
     """
     ANARCI running function
-        @list_of_inputs: List of antibody sequences
-        @ncores: Number of CPU cores to use
-    Return:
-        @output: ANARCI annotated and numbered sequences
+    ---------------
+    Parameters
+        list_of_inputs - List of antibody sequences
+                ncores - Number of CPU cores to use
+    ---------------
+    Return
+         output - ANARCI annotated and numbered sequences
     """
-    list_for_anarci_parsing = [("scFv"+str(n), list_of_inputs[n][0]) for n in range(len(list_of_inputs))]
+    list_for_anarci_parsing = [( "scFv"+str(n), list_of_inputs[n][0] ) for n in range( len( list_of_inputs )) ]
     try:
-        output = run_anarci(list_for_anarci_parsing, scheme='imgt', assign_germline = True, ncpu= ncores)
+        output = run_anarci( list_for_anarci_parsing, scheme='imgt', assign_germline = True, ncpu = ncores)
     except:
         logging.error("\tANARCI parsing failed to parse this chunk of sequences")
         output = []
@@ -53,14 +56,16 @@ class Main(object):
     Return
         output_name - txt file that contains anarci parsed and numbered sequences
     """
-    def __init__(self, input_file, ncpu=4, chain="H", 
-                species="human", output_name="test_anarciparsed.txt", output_dir="."):
-
+    def __init__(self, input_file, ncpu = 4, chain = "H", 
+                                             species = "human", 
+                                             output_name = "test_anarciparsed.txt", 
+                                             output_dir = "."):
        self.input_file = input_file
 
-       if not os.path.isfile(self.input_file):
-           logging.warning("Input file does not exist: {0}".format(self.input_file))
-           raise AssertionError("Input file does not exist: ", self.input_file)
+       if not os.path.isfile( self.input_file ):
+           logging.warning("Input file does not exist: {0}".format( self.input_file ))
+           raise AssertionError("Input file does not exist: ", self.input_file )
+
        self.ncpu = ncpu
        self.rate_of_analysis = 200000
        self.chain = chain
@@ -84,13 +89,14 @@ class Main(object):
             rows.append([ entry.input_seq, 
                           entry.redundancy,
                           entry.CDRH3,
-                          "Unknown",
-                          "Unknown", 
+                          "Unknown",   # Aboss flag1 ignoring
+                          "Unknown",   # Aboss flag2 ignoring
                           entry.IG_V,
                           entry.IG_J,
                           entry.numbered, 
                           entry.seqID])
-        with open(join(self.output_dir, self.output_name), "ab") as csv_file:
+
+        with open( join( self.output_dir, self.output_name), "ab" ) as csv_file:
             writer = csv.writer(csv_file, delimiter=',')
             writer.writerows(rows)
                
@@ -100,29 +106,48 @@ class Main(object):
         return total
 
     def remove_stars(self, in_list):
+        # Removing sequences if there is a * in antibody sequence
         return [x for x in in_list if "*" not in x[0] and len(x[0]) < 152]
 
     def _open_dataframe(self):
+        self.df = pd.read_csv( self.input_file, sep = "\t",
+                                                iterator = True, 
+                                                chunksize = self.rate_of_analysis,
+                                                index_col = 0)
 
-        self.df = pd.read_csv(self.input_file, sep="\t",
-                              iterator=True, chunksize=self.rate_of_analysis,
-                                                                index_col=0)
+    def split_anarci_outputs(self, output, inputs):
+
+        # Splitting lists to run structural viability in parallel
+        anarci_output = np.array_split( output[1], self.ncpu )
+        species_matrix = np.array_split( output[2], self.ncpu )
+        input_sequences_list = np.array_split( inputs, self.ncpu )
+
+        return anarci_output, species_matrix, input_sequences_list
+
+    def get_list_to_save(self, correct_sequences_portion):
+        # Collecting info from ANARCI parsing to save
+        # This will be used later on to run SAAB+
+        temp_write_to_csv_list = []
+        for portion in range(len(correct_sequences_portion)):				
+            temp_write_to_csv_list += correct_sequences_portion[portion][3]
+        return temp_write_to_csv_list
+
     def run(self):
         check_anarci()
         self._open_dataframe()
 	count = 0
 	count_correct = 0
         
-        df_data, df_count = tee(self.df)        
-        num_of_entries = self.find_seq_number(df_count)
+        df_data, df_count = tee( self.df )        
+        num_of_entries = self.find_seq_number( df_count )
 
 	for chunk in df_data:
-            inputs = dict(chunk[["Protein_Seq", "Redundancy"]].get_values()).items()
-            count += len(chunk)
+            inputs = dict( chunk[[ "Protein_Seq", "Redundancy" ]].get_values() ).items()
+            count += len( chunk )
             if not inputs:
                 continue
-            inputs = self.remove_stars(inputs)
-            output = anarci_fun(inputs, self.ncpu)
+            inputs = self.remove_stars( inputs )
+            output = anarci_fun( inputs, self.ncpu )
 
             if not output:
                 continue
@@ -130,29 +155,27 @@ class Main(object):
             if len(output[1]) < 3000:
                 self.ncpu = 1
 
-            anarci_output = np.array_split(output[1], self.ncpu)
-            species_matrix = np.array_split(output[2], self.ncpu)
-            input_sequences_list = np.array_split(inputs, self.ncpu)
+            anarci_output, species_matrix, input_sequences_list = self.split_anarci_outputs( output, inputs )
            
-            pool = mp.Pool(processes=self.ncpu)
-            results = [ pool.apply_async(checking_sequence_viability, args = (anarci_output[i], species_matrix[i], input_sequences_list[i], 
-                                                                                                            self.chain, self.species )) for i in xrange(self.ncpu) ]
+            pool = mp.Pool( processes = self.ncpu )
+            results = [ pool.apply_async(checking_sequence_viability, args = ( anarci_output[i], 
+                                                                               species_matrix[i], 
+                                                                               input_sequences_list[i], 
+                                                                               self.chain, 
+                                                                               self.species )) for i in xrange(self.ncpu) ]
             correct_sequences_portion = [ r.get() for r in results ]
             del results
             pool.close()
             inputs = []
 
-            temp_write_to_csv_list = []
-            for portion in range(len(correct_sequences_portion)):				
-                temp_write_to_csv_list += correct_sequences_portion[portion][3]
+            temp_write_to_csv_list = self.get_list_to_save( correct_sequences_portion )
 
             del correct_sequences_portion
             count_correct += len(temp_write_to_csv_list)
 
-            progress = returnProgress(float(count)/num_of_entries, round((float(count_correct))/count,3))
+            progress = returnProgress( float(count)/num_of_entries, round((float(count_correct))/count,3) )
             # Write outputs to csv file
             self.write_to_tempcsv(temp_write_to_csv_list)
-            temp_write_to_csv_list = []
             
             # Saving outputs and printing status
             logging.info("\t{0}".format(progress))

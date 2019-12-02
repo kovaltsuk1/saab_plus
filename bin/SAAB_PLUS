@@ -62,9 +62,8 @@ logging.basicConfig(filename='saab_plus.log', level=logging.INFO,
                      datefmt='%Y-%m-%d %H:%M:%S')
 
 import pandas as pd
-import os, sys
+import os, sys, textwrap
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
-import textwrap
 from saab_plus.aboss_utils.run_ANARCI_parsing import Main
 from Bio import SeqIO
 from collections import Counter
@@ -103,22 +102,22 @@ class Annotation(object):
 
     def pass_diagnostics(self):
         """
-        Deleting existing diagnostics.log
+        Deleting existing diagnostics.log file.
         Next, running Diagnostics() and 
-        checking for errors
+        checking for any errors
         """
-        if os.path.isfile("diagnostics.log"):
-            os.remove("diagnostics.log")
+        if os.path.isfile( "diagnostics.log" ):
+            os.remove( "diagnostics.log" )
         diagnostics = Diagnostics()
         diagnostics()
-        if not os.path.isfile("diagnostics.log"):
-            raise AssertionError("diagnostics.log was not created!?")
+        if not os.path.isfile( "diagnostics.log" ):
+            raise AssertionError( "diagnostics.log was not created!?" )
         return self.check_diagnostics_log()
 
     def unique_aa(self):
         "reading fasta and converting to python dict"
-        records = SeqIO.parse(self.filename, 'fasta')
-        return Counter(str(rec.seq) for rec in records)
+        records = SeqIO.parse( self.filename, 'fasta' )
+        return Counter( str( rec.seq ) for rec in records )
 
     def convert_fasta_to_frame(self):
         """
@@ -127,61 +126,71 @@ class Annotation(object):
         please modify this method accordingly.
         ----------
         Parameters
-            self.unique_aa - converts FASTA file to dictionary.
-                             Key is the unique antibody sequence and
-                             Value is the number of repeats
+            self.unique_aa() - converts FASTA file to dictionary.
+                               Key is the unique antibody sequence and
+                               Value is the number of repeats
         ----------
         Returns
             self.gzipped -   GZipped DataFrame that is turned into
                              an iterator later on for SAAB+ analysis
         """
         df = pd.DataFrame( self.unique_aa().items(),
-                                    columns=["Protein_Seq", "Redundancy"])
+                                            columns = [ "Protein_Seq", "Redundancy" ])
         self.gziped = "{0}_df.txt.gz".format(self.filename)
-        df.to_csv(self.gziped, sep = "\t", compression="gzip")
+        df.to_csv( self.gziped, sep = "\t", compression = "gzip" )
         return self
+
+    def clean_intermediate(self):
+        logging.info("\tRemoving intermediate: {0}".format( self.gziped ) )
+        os.remove( self.gziped ) 
 
     def run(self):
         # Starting anarci parsing
         print "\n\tInitiating anarci parsing" 
         logging.info("\tStarting ANARCI parsing\n")
-        anarci_parsing = Main(input_file = self.gziped, 
-                             ncpu = self.ncores, 
-                             chain = self.chain, 
-                             species = self.species, 
-                             output_dir =".", 
-                             output_name = "anarci_parsed.txt") 
+        anarci_parsing = Main( input_file = self.gziped, 
+                               ncpu = self.ncores, 
+                               chain = self.chain, 
+                               species = self.species, 
+                               output_dir = ".", 
+                               output_name = "anarci_parsed.txt") 
         anarci_parsing.run()
-        os.remove(self.gziped)
-
         print "\n\tanarci parsing is done\n"
         logging.info("\tANARCI parsing is finished")
+        self.clean_intermediate()
+
         # Starting SAAB running
         anarci_gzip_file = "anarci_parsed.txt.gz"
-        if not os.path.isfile(anarci_gzip_file):
-            logging.error("anarci parsed txt file is not found: {0}".format(anarci_gzip_dir))
-            raise AssertionError("File is not found: ", anarci_gzip_file)
+        if not os.path.isfile( anarci_gzip_file ):
+            logging.error("anarci parsed txt file is not found: {0}".format( anarci_gzip_dir ))
+            raise AssertionError( "File is not found: ", anarci_gzip_file )
 
         # Running SAAB+
         print "\tInitiating SAAB plus"
         logging.info("\tStarting SAAB plus pipeline\n")
-        saab_instance = RunSaab(anarci_gzip_file, 
-                                self.output_name, 
-                                self.output_dir) 
+        saab_instance = RunSaab( anarci_gzip_file,
+                                 self.ncores,
+                                 self.output_name, 
+                                 self.output_dir ) 
 
-        saab_instance.initiate_SAAB(self.ncores)
-        os.remove(anarci_gzip_file)
+        saab_instance.initiate_SAAB()
+        os.remove( anarci_gzip_file )
 
         logging.info("\tSAAB+ is finished")
         logging.info("\tApplying quality filters")
 
         # Quality filters
-        apply_ess_instance = ApplyESS(os.path.join(self.output_dir, self.output_name+".gz") )
+        apply_ess_instance = ApplyESS( os.path.join( self.output_dir, self.output_name + ".gz" ) )
         apply_ess_instance.adding_pdb_length.apply_ess()
-        
+
+        logging.info("\tFormating Canonical Classes")
+        apply_ess_instance.expanding_canonical_class_dict()
+       
         logging.info("\tApplying clustering")
         apply_ess_instance.clustering().save()
-        logging.info("\touput_file is: {0}".format(os.path.join(self.output_dir, self.output_name+".gz")))
+
+
+        logging.info("\touput_file is: {0}".format( os.path.join( self.output_dir, self.output_name+".gz" )))
         logging.info("\n\n\t\tDONE!\n\n")
         print "\n\tDone!\n"
 

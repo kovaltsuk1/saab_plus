@@ -3,23 +3,32 @@ from saab_plus.aboss_utils.region_definitions import Accept
 import json
 
 list_of_frames ={
-        "H":["cdrh3","fwh1", "cdrh1", "fwh2", "cdrh2", "fwh3","fwh4"],
-        "L":["cdrl3","fwl1", "cdrl1", "fwl2", "cdrl2", "fwl3","fwl4"]}
+                 "H": ["cdrh3", "fwh1", 
+                       "cdrh1", "fwh2", 
+                       "cdrh2", "fwh3",
+                       "fwh4"],
+                 "L": ["cdrl3", "fwl1", 
+                       "cdrl1", "fwl2", 
+                       "cdrl2", "fwl3", 
+                       "fwl4"]}
 
 good_aminos = sorted(list("QWERTYIPASDFGHKLCVNM"))
 
 output_tuple = namedtuple("output_tuple","input_seq redundancy CDRH3 IG_V IG_J numbered seqID")
 
-CDR3 = {"H":"cdrh3","L":"cdrl3"}
-FW1 = {"H":"fwh1","L":"fwl1"}
-FW3 = {"H":"fwh3","L":"fwl3"}
+CDR3 = { "H": "cdrh3",
+         "L": "cdrl3"}
+FW1 = { "H": "fwh1",
+        "L": "fwl1"}
 
 a = Accept()
 a.numbering_scheme = "imgt"
 a.definition = "imgt"
 
 def check_amino_viability(aa):
-    if aa not in good_aminos and aa != "-":  # Checking here for unusual aa while skipping "-" entries at some position (e.g. cases of canonical CDRs)
+    # Checking here for unusual aa 
+    # Skipping "-" entries at some position ( IMGT gaps)
+    if aa not in good_aminos and aa != "-":  
         return False
     return True
 
@@ -28,8 +37,10 @@ def check_skip(aa):
         return True
     return False
 
-def rabbit_length_check(position_73, rabbit_position_84,
-                                        regions, quality):
+def rabbit_length_check(position_73, 
+                        rabbit_position_84,
+                        regions, 
+                        quality):
     if len(regions["fwh3"]) - position_73 + rabbit_position_84  < 38:   # Accounting for insertions at postion 73 and deletion at 84
             quality = ("Bad", "FW3 length is shorter IMGT defined"), rabbit_position_84
     if len(regions["fwh2"]) < 17:
@@ -43,6 +54,8 @@ def rabbit_length_check(position_73, rabbit_position_84,
 def standard_species_length_check(position_73, regions, quality):
 
     # We iterate heavy chain antibody regions, and check for their IMGT defined lengths
+    # Skipping fwh1 as these regions are usually shorter due to sequencing primer selection
+
     for region, length in [("fwh2",17), ("fwh3",38),("fwh4",9), ("cdrh3", 37)]:
         if region == "fwh3":
             if len(regions[region]) - position_73 < length:
@@ -58,7 +71,8 @@ def standard_species_length_check(position_73, regions, quality):
                 return quality
     return quality
 
-def light_chain_species_length_check(absent_positions,position_73,regions,quality):
+def light_chain_species_length_check(absent_positions, position_73, regions, quality):
+
         if len(regions["fwl3"]) + absent_positions - position_73 < 38: # Accounting for insertions at postion 73,81,83
                 quality = ("Bad", "FW3 length is shorter IMGT defined")
         if len(regions["fwl2"]) < 17:
@@ -68,10 +82,10 @@ def light_chain_species_length_check(absent_positions,position_73,regions,qualit
         return quality
 
 def standard_species_length_check_fw1(fw,all_region_aa,quality):
-    """
-    Here we check for indels in fw1. The problem is that for many Ig-seq datasets FW1 primers are used that start after position 15.
-    """
-    frame1 =  [int(x) for x in all_region_aa[fw]]
+
+    # In many cases, FW1 is shorter due to primer selection
+
+    frame1 =  [ int(x) for x in all_region_aa[ fw ] ]
     if 10 not in frame1:
         if min(frame1) < 10:
             if max(frame1) - min(frame1) != len(frame1):
@@ -120,20 +134,27 @@ def check_light_chain_missing_pos(residue, frame, position_meta):
     elif frame == "fwl4":
         if str(residue) == "118":
             position_meta["conserved_position"] += 1
-def check_heavy_chain_missing_pos(residue, frame, position_meta,
-                                                  species):
+
+def check_heavy_chain_missing_pos( residue, 
+                                   frame, 
+                                   position_meta,
+                                   species):
     if frame == "cdrh1":
         if str(residue) == "27":
             position_meta["conserved_position"] += 1
         elif str(residue) == "2" and species == "rabbit":
             position_meta["rabbit_position_2"] -=1
+
     if frame == "fwh3":
         if str(residue) == "104":
             position_meta["conserved_position"] += 1
+
         elif str(residue) == "73":
             position_meta["position_73"] += 1
+
         elif str(residue) == "84" and species == "rabbit":
             position_meta["rabbit_position_84"] -=1
+
     elif frame == "fwh4":
         if str(residue) == "118":
             position_meta["conserved_position"] += 1
@@ -193,10 +214,14 @@ def checking_structural_viability(numbering, species, chain):
                         # In light chain, positions 81 and 82 are often absent
                         # Position 118 tells us if numbering of CDR-H3 was successful
                         if chain == "L":
-                            check_light_chain_missing_pos(residue[0][0], frame, position_meta)
+                            check_light_chain_missing_pos( residue[0][0], 
+                                                           frame, 
+                                                           position_meta)
                         elif chain == "H":
-                            check_heavy_chain_missing_pos(residue[0][0], frame, position_meta,
-                                                                                species)
+                            check_heavy_chain_missing_pos( residue[0][0], 
+                                                           frame, 
+                                                           position_meta,
+                                                           species )
                 # Here we record amino acid sequences
                 # of the antibody regions
                 region += residue[1]
@@ -204,35 +229,36 @@ def checking_structural_viability(numbering, species, chain):
 
     # if we do not have the key conserved positions, we stop       
     if position_meta["conserved_position"] != 3:
-            quality = ("Bad", "No Conserved Position")
+            quality = ( "Bad", "No Conserved Position" )
             return all_region_aa, quality, regions
 
     # As rabbit has different antibody region lengths to other analysed species (e.g. human, mouse, rat, alpaca)
     # Also Heavy and Light chains have different region lengths
     if chain == "H" and species != "rabbit":
-            quality = standard_species_length_check(position_meta["position_73"],
-                                                    regions,
-                                                    quality)
+            quality = standard_species_length_check( position_meta["position_73"],
+                                                     regions,
+                                                     quality )
     elif chain == "H" and species == "rabbit":
-            quality = rabbit_length_check(position_meta["position_73"],
-                                          position_meta["rabbit_position_84"],
-                                          regions,
-                                          quality)
+            quality = rabbit_length_check( position_meta["position_73"],
+                                           position_meta["rabbit_position_84"],
+                                           regions,
+                                           quality )
     elif chain == "L":
-            quality = light_chain_species_length_check(position_meta["absent_positions"], 
-                                                       position_meta["position_73"],
-                                                       regions,
-                                                       quality)
+            quality = light_chain_species_length_check( position_meta["absent_positions"], 
+                                                        position_meta["position_73"],
+                                                        regions,
+                                                        quality )
     if quality == "good":
+
         # Check for indels in framework 1 as some sequences do not start with position 1 
         fw = FW1[chain]
-        if len(all_region_aa[fw]) == 0:
+        if len( all_region_aa[ fw ] ) == 0:
             return all_region_aa, quality, regions
+
         if species != "rabbit":
             quality = standard_species_length_check_fw1(fw, 
                                                         all_region_aa, 
                                                         quality)
-        # Special case for rabbits
         else:
             quality = rabbit_length_check_fw1(fw,
                                               all_region_aa,
@@ -269,7 +295,7 @@ def check_V_and_J_gene_IMGT_alignment(species_matrix, gene, species):
             if species_matrix[0]["germlines"][gene][1] > 0.5:
                 return species_matrix[0]["germlines"][gene][0][1] 
 
-    if depth == 2:
+    elif depth == 2:
         if species_matrix[0]["germlines"][gene][0][0][0] != species:
             range_genes = len(species_matrix[0]["germlines"][gene][0])
             for n in range(range_genes):
@@ -296,8 +322,8 @@ def check_IMGT_alignment(species_matrix, species, chain):
     """
     # Here we aling sequence to HMM 
     IGH_IGJ_status = "unknown"
-    IG_V = check_V_and_J_gene_IMGT_alignment(species_matrix,"v_gene", species)
-    IG_J = check_V_and_J_gene_IMGT_alignment(species_matrix,"j_gene", species)
+    IG_V = check_V_and_J_gene_IMGT_alignment( species_matrix, "v_gene", species )
+    IG_J = check_V_and_J_gene_IMGT_alignment( species_matrix, "j_gene", species )
     if chain == "H":
         if not IG_J or not IG_V:
             IGH_IGJ_status = None
@@ -305,6 +331,7 @@ def check_IMGT_alignment(species_matrix, species, chain):
             IGH_IGJ_status = None
         elif IG_V[:3] != "IGH" or IG_J[:3] != "IGH":
             IGH_IGJ_status = None
+
     elif chain == "L":
         if not IG_J or not IG_V:
             IGH_IGJ_status = None
@@ -312,6 +339,7 @@ def check_IMGT_alignment(species_matrix, species, chain):
             IGH_IGJ_status = None
         elif IG_V == False or IG_J == False:
             IGH_IGJ_status = None
+
     return IG_V, IG_J, IGH_IGJ_status
 
 def viable_outputs(anarci_output):
@@ -356,13 +384,16 @@ def checking_sequence_viability(anarci_output, species_matrix, input_sequences_l
             if status != "good":
                 continue
             # Some sequences have very long fw4 regions or duplicated fw4 regions
-            if len(input_sequences_list[u][0][input_sequences_list[u][0].rfind(regions[list_of_frames[chain][-1]]):]) > 13 or input_sequences_list[u][0].count(regions[list_of_frames[chain][-1]]) > 1:
+            if len(input_sequences_list[u][0][input_sequences_list[u][0].rfind(regions[list_of_frames[chain][-1]]):]) > 13 or \
+                   input_sequences_list[u][0].count(regions[list_of_frames[chain][-1]]) > 1:
                 continue
             # Here we check for the correct antibody chain 
             IG_V, IG_J, IGH_IGJ_status = check_IMGT_alignment(species_matrix[u],
-                                                                species, chain)
+                                                              species, 
+                                                              chain)
             if IGH_IGJ_status == None:
                 continue
+            
             anarci_parsed[input_sequences_list[u][0]] = json.dumps(aa)
             V_gene_dict[IG_V] = 1
             J_gene_dict[IG_J] = 1
