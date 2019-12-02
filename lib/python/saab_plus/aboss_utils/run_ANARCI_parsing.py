@@ -47,21 +47,23 @@ class Main(object):
     Class that initiates structural filtering analysis.
     --------------
     Parameters
-        input_file - txt file where antibody amino acid sequences are
+        input_file - Txt file where antibody amino acid sequences are
                      in the column with Protein_Seq as a header
-              ncpu - number of cores used 
-             chain - H at the moment
+              ncpu - Number of CPU 
+             chain - H (Heavy) at the moment
            species - human as default
     --------------
     Return
-        output_name - txt file that contains anarci parsed and numbered sequences
+        output_name - Txt file that contains anarci parsed and numbered sequences
     """
-    def __init__(self, input_file, ncpu = 4, chain = "H", 
-                                             species = "human", 
-                                             output_name = "test_anarciparsed.txt", 
-                                             output_dir = "."):
-       self.input_file = input_file
+    def __init__(self, input_file, 
+                       ncpu = 4,
+                       chain = "H", 
+                       species = "human", 
+                       output_name = "test_anarciparsed.txt", 
+                       output_dir = "."):
 
+       self.input_file = input_file
        if not os.path.isfile( self.input_file ):
            logging.warning("Input file does not exist: {0}".format( self.input_file ))
            raise AssertionError("Input file does not exist: ", self.input_file )
