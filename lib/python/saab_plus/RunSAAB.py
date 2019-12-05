@@ -7,6 +7,7 @@ from aboss_utils.ProgressBar import returnProgress
 from code.StructuralAlignment import align_single_sequence
 from code.DataManagement.SAbDab import structural_reference
 from code.PrepareForSAAB import oas_output_parser
+from code.Common.Common import chain_id_converter
 from collections import namedtuple
 import logging
 
@@ -16,6 +17,10 @@ formatLoops = {"cdrh1":"H1",
                "cdrl1":"L1",
                "cdrl2":"L2",
                "cdrl3":"L3Seq"} # Light chain for future work
+
+chain_formatter = {"H": "Heavy",
+                   "L": "Light"
+                   }
 
 sequence_obj = namedtuple("sequence_obj", "sequence numbering sequencemeta")
 
@@ -70,18 +75,19 @@ class RunSaab(object):
         self.chain   - Antibody chain analysis (currently only heavy chain
                        is supported in SAAB+)
     """
-    def __init__(self, input_file, ncpu, output_name, output_dir ):
+    def __init__(self, input_file, ncpu,  output_name, output_dir, chain ):
         self.input_file = input_file
         self.ncpu = ncpu
         self.output_name = output_name
         self.output_dir = output_dir
 
         assert os.path.isfile( self.input_file ), "Input file does not exist"
-        self.strucs = structural_reference()
-        logging.info("\tNumbered PDBs have been loaded into memory")
         self.rows_to_skip = 0 # if anarci analysis was interrupted
         self.currently_analysed = 0
-        self.chain  = "Heavy"
+        self.chain = chain_formatter[chain]
+
+        self.strucs = structural_reference( chain_id_converter[self.chain] )
+        logging.info("\tNumbered PDBs have been loaded into memory")
 
     def create_output_dir(self):
         try:

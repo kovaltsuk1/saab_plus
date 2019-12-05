@@ -131,6 +131,58 @@ class Diagnostics:
                     total +=1
         return total
     
+    def checking_pdb_length(self):
+
+        from code.Common.Common import pdb_length_location
+        # checking pdb_length
+        for cdr in ["H3", "L3"]:
+            if not self.file_exist( pdb_length_location[cdr] ):
+                self.logger.error(" PDB template info file for {0} loop is not found!".format(cdr) )
+            else:
+                self.logger.info("  PDB template info file for {0} loop is located: OK".format(cdr))
+
+    def checking_cluster_files(self):
+        from code.Common.Common import clusters
+
+        for cdr in ["H3", "L3"]:
+            if not self.file_exist(clusters[cdr]):
+                self.logger.error(" CDR-{0} cluster mapping file is missing!".format(cdr) )
+            else:
+                self.logger.info("  CDR-{0} cluster mapping file is located: OK".format( cdr ) )
+
+    def checking_pdb_frameworks(self):
+        from code.Common.Common import template_db
+
+        for cdr in ["H3", "L3"]:
+            if not self.dir_exist(template_db[cdr]):
+                self.logger.error(" Directory with PDB frameworks for {0} loop not found".format( cdr ) )
+            else:
+                if not os.listdir(template_db[cdr]):
+                    self.logger.error(" Directory with PDB frameworks for {0} loop is empty".format( cdr ) )
+                else:
+                    self.logger.info("  Directory with PDB frameworks for {0} loop is located: OK".format( cdr ) )
+
+    def checking_templates(self):
+        from code.Common.Common import fread_db
+
+        for cdr in ["H3", "L3"]:
+            if not self.dir_exist(fread_db[ cdr ]):
+                self.logger.error( "FREAD PDB template directory for {0} loop is not found".format( cdr ) )
+            else:
+                self.logger.info(" Directory with FREAD templates for {0} loop is located: OK".format( cdr ) )
+                self.logger.info(" Number of FREAD templates found: {0}".format(self.count_templates(fread_db[cdr], ".atm.gz")))
+   
+    def checking_numbered(self):
+        from code.Common.Common import numbered_datasets_location
+        
+        for cdr in ["H3", "L3"]:
+            if not self.dir_exist( os.path.join( numbered_datasets_location[cdr]) ):
+                self.logger.error(" Directory with numbered PDB frameworks for {0} loop is not found".format( cdr ) )
+            else:
+                self.logger.info(" Directory with numbered PDB frameworks for {0} loop: OK".format( cdr ) )
+                if not os.listdir( os.path.join( numbered_datasets_location[cdr] ) ):
+                    self.logger.error(" Directory with numbered PDB frameworks for {0} loop: empty!!!".format( cdr ) )
+
     def check_fread_db(self):
         try:
             import code.Common.Common
@@ -141,39 +193,14 @@ class Diagnostics:
             from code.Common.Common import pdb_length_location, template_db,\
                                             fread_db, numbered_datasets_location,\
                                             clusters
-            # checking pdb_length
-            if not self.file_exist( pdb_length_location ):
-                self.logger.error(" PDB template info file is not found!")
-            else:
-                self.logger.info("         PDB template info file is located: OK")
+            self.checking_pdb_length()
             
-            if not self.file_exist(clusters):
-                self.logger.error(" CDR-H3 cluster mapping file is missing!")
-            else:
-                self.logger.info("    CDR-H3 cluster mapping file is located: OK")
+            self.checking_cluster_files()
 
-            # locating PDB frameworks
-            if not self.dir_exist(template_db):
-                self.logger.error(" Directory with PDB frameworks not found")
-            else:
-                if not os.listdir(template_db):
-                    self.logger.error(" Directory with PDB frameworks is empty")
-                else:
-                    self.logger.info("  Directory with PDB frameworks is located: OK")
+            self.checking_pdb_frameworks()
 
-            # locating fread pdb templates
-            if not self.dir_exist(fread_db):
-                self.logger.error( "FREAD PDB template directory not found")
-            else:
-                self.logger.info(" Directory with FREAD templates is located: OK")
-                self.logger.info(" Number of FREAD templates found: {0}".format(self.count_templates(fread_db, ".atm.gz")))
+            self.checking_templates()
 
-            if not self.dir_exist( os.path.join( numbered_datasets_location,'sabdab', "IMGT")):
-                self.logger.error(" Directory with numbered PDB frameworks is not found")
-            else:
-                self.logger.info(" Directory with numbered PDB frameworks: OK")
-                if not os.listdir( os.path.join( numbered_datasets_location,'sabdab', "IMGT") ):
-                    self.logger.error(" Directory with numbered PDB frameworks: empty!!!")
         except ImportError:
             self.logger.error(" Cannot import PATHs from Common module")
 
@@ -185,7 +212,6 @@ class Diagnostics:
                         ("Bio", "1.70")]
         for lib, version in dependencies:
             try:
-#                globals()[lib] = importlib.import_module(lib)
                  imported_lib = importlib.import_module(lib)
                  imported_version = imported_lib.__version__ 
                  if LooseVersion(imported_version) < LooseVersion(version):

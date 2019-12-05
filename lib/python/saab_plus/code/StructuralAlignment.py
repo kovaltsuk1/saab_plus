@@ -1,4 +1,4 @@
-from Common.Common import get_sequence, numbered_datasets_location, number_sequence
+from Common.Common import get_sequence, numbered_datasets_location, number_sequence, chain_id_converter
 from Alignment.Align import align_sequences
 from Alignment.LoopAlignment import perform_loop_alignment, extract_cdrs
 from DataManagement.SAbDab import structural_reference
@@ -16,7 +16,7 @@ output_tuple = namedtuple("output_tuple",["CDR_H3_template",
                                          "CDR_H3_sequence",
                                          "ESS"])
 
-formatDict= { 
+format_dict= { 
               "Light": {"CDR3": "L3",
                         "CDR1": "L1",
                         "CDR2": "L2"},
@@ -24,6 +24,7 @@ formatDict= {
                        "CDR1": "H1",
                        "CDR2":"H2" } 
               }
+
 
 def parsecdr( numcdrseq ):
     "parsing CDRs for SCALOP"
@@ -36,7 +37,7 @@ def parsecdr( numcdrseq ):
             bigcdrseq.append([_pos,res])
     return bigcdrseq
 
-def get_best_match(query,structures,region=None):
+def get_best_match(query, structures, region=None):
     """
     Finding the framework with the highest sequence identity
     """
@@ -74,29 +75,34 @@ def get_best_cdr_match( cdrs , fread_template, chain):
     pdb_template = fread_template[0:4]
     pdb_chain = fread_template[4]
 
-    if not cdrs.get("H3", None):
+    cdr_id_name = chain_id_converter[chain]
+    if not cdrs.get( cdr_id_name, None):
         return {}, 0
 
-    fread_results = perform_loop_alignment( "H3", 
+    fread_results = perform_loop_alignment( cdr_id_name, 
                                             pdb_template,
                                             pdb_chain, 
-                                            cdrs["H3"])
+                                            cdrs[ cdr_id_name ])
     if not fread_results:
         return {}, 0
     maxESSminCA = findmaxESSminCA( fread_results )
     essScore = fread_results[maxESSminCA][1]["scr"]
-    results= { formatDict[chain]["CDR3"]: fread_results[maxESSminCA][1]["str"] }
+    results= { format_dict[chain]["CDR3"]: fread_results[maxESSminCA][1]["str"] }
 
     return results, essScore
 
-def fetch_canonicals(query):
+def fetch_canonicals(query, chain):
     """
     Function to structurally annotate canonical 
     classes.
     Passing numbered canonical class sequences
     """
+    
+    canonical_selection = {"Heavy": ["H1", "H2"],
+                           "Light": ["L1", "L2"]
+                           }
     can = {}
-    for canonical in ["H1", "H2"]:
+    for canonical in canonical_selection[chain]:
         if query.sequencemeta.get( canonical, None ):
             try:
                 _,_,_can,_ = _assign(parsecdr(query.sequencemeta[canonical].items()), 
@@ -142,17 +148,18 @@ def align_single_sequence(queries, structures, chain):
     with structural information.
     """
     output_dict = {}
+    cdr3_id_name = chain_id_converter[chain]
     for query in queries:
         fread_results = False
 
         #Get best framework pdb_template
         full_results = get_best_match( query.numbering, 
                                        structures)
-        CDRSequences = extract_cdrs( query.numbering[0] )
-        CDR3Sequence = CDRSequences.get( "H3", None )
+        CDRSequences = extract_cdrs( query.numbering[0], cdr3_id_name  )
+        CDR3Sequence = CDRSequences.get( cdr3_id_name, None )
 
         # SCALOP
-        can = fetch_canonicals( query ) 
+        can = fetch_canonicals( query, chain ) 
 
         if "best_pdb" not in full_results:
             # if we cannot find framework match
@@ -176,7 +183,7 @@ def align_single_sequence(queries, structures, chain):
         # Recording outputs
         try:
             if fread_results:
-                output_dict[query.sequence] = output_tuple( CDR_H3_template = fread_results[formatDict[chain]["CDR3"]],
+                output_dict[query.sequence] = output_tuple( CDR_H3_template = fread_results[format_dict[chain]["CDR3"]],
                                                             Canonical_classes = can,
                                                             Redundancy = query.sequencemeta["Redundancy"], 
                                                             Framework_template = full_results['best_pdb'],

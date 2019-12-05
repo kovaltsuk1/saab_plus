@@ -6,7 +6,7 @@ description="""
            Annotation of BCR repertoires with
                  Structural Information
 
-                    Version: 1.0.0
+                    Version: 1.1.0
 
         SAAB+ developed by Kovaltsuk et al., 2019.
 
@@ -28,7 +28,7 @@ description="""
     >blah2
     SLRLSCAASGFTFRSYWMSWVRQAPGRGLEWIARIND......
 
-            Currently, SAAB+ supports heavy chain 
+            SAAB+ supports heavy and light chain 
                 BCR repertoire analysis
 
                        ---------
@@ -39,21 +39,21 @@ description="""
 
           DataFrame columns are:
 
-          Protein_Seq - Full antibody amino acid sequences
-      CDR-H3_template - FREAD PDB templates
-   H1_Canonical_Class - SCALOP predicted CDR-H1 canonical class
-   H2_Canonical_Class - SCALOP predicted CDR-H2 canonical class
-           Redundancy - Number of Proiten_Seq copies in the
-                        input fasta file
-   Framework_template - PDB template used in CDR-H3 
-                        structure prediction
-      CDR-H3_sequence - Sequence of CDR-H3 loop
-                  ESS - FREAD score for the predicted 
-                        CDR-H3 structure
-           Annotation - Sequences, whose CDR-H3 structure
-                        prediction scores were above 
-                        the quality threshold
-             Clusters - CDR-H3 clusters (0.6A threshold)
+            Protein_Seq - Full antibody amino acid sequences
+   CDR-{H3,L3}_template - FREAD PDB templates
+{H1,L1}_Canonical_Class - SCALOP predicted CDR-H1 canonical class
+{H2,L2}_Canonical_Class - SCALOP predicted CDR-H2 canonical class
+             Redundancy - Number of Proiten_Seq copies in the
+                          input fasta file
+     Framework_template - PDB template used in CDR-{H3, L3} 
+                          structure prediction
+   CDR-{H3,L3}_sequence - Sequence of CDR-{H3,L3} loop
+                    ESS - FREAD score for the predicted 
+                          CDR-{H3,L3} structure
+             Annotation - Sequences, whose CDR-{H3,L3} structure
+                          prediction scores were above 
+                          the quality threshold
+               Clusters - CDR-{H3,L3} clusters (0.6A threshold)
 -------------------------------------------------------
 """
 
@@ -172,7 +172,8 @@ class Annotation(object):
         saab_instance = RunSaab( anarci_gzip_file,
                                  self.ncores,
                                  self.output_name, 
-                                 self.output_dir ) 
+                                 self.output_dir,
+                                 self.chain) 
 
         saab_instance.initiate_SAAB()
         os.remove( anarci_gzip_file )
@@ -181,7 +182,7 @@ class Annotation(object):
         logging.info("\tApplying quality filters")
 
         # Quality filters
-        apply_ess_instance = ApplyESS( os.path.join( self.output_dir, self.output_name + ".gz" ) )
+        apply_ess_instance = ApplyESS( os.path.join( self.output_dir, self.output_name + ".gz" ), self.chain )
         apply_ess_instance.adding_pdb_length.apply_ess()
 
         logging.info("\tFormating Canonical Classes")
@@ -208,8 +209,8 @@ def initArgParser():
     group.add_argument('-n', action='store', dest='ncores', default=4, type=int,
                         help="Number of CPU cores to use")
     group.add_argument("-c", action="store", dest="chain", default="H",
-                        help="Antibody chain information. Currently only H (heavy) is supported ",
-                        choices=["H"])
+                        help="Antibody chain information. Light chain being implemented",
+                        choices=["H", "L"])
     group.add_argument("-o", action="store", dest="output_name", default="output.txt",
                         help="Output filename, Default is output_name.txt")
     group.add_argument("-d", action="store", dest="output_dir", default=".",

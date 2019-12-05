@@ -18,7 +18,7 @@ def fread_db_library(directory):
     return paths
 
 setup(name='saab_plus',
-      version='1.0.1',
+      version='1.1.0',
       description='Structural Diversity of B-Cell Repertoire along the B-cell Differentiation axis in Humans and Mice',
       author='Aleksandr Kovaltsuk',
       author_email='opig@stats.ox.ac.uk',
