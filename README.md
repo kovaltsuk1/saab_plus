@@ -79,8 +79,8 @@ SAAB+ outputs a zipped tab-delimited text file.
 {H2,L2}_Canonical_Class - SCALOP predicted CDR-{H2,L2} canonical class
              Redundancy - Number of Proiten_Seq copies in the input fasta file  
      Framework_template - PDB structure that was used in CDR-{H3,L3} structure prediction  
-   CDR-{H3,L3}_sequence - Sequence of CDR-H3 loop  
-                    ESS - FREAD score for the predicted CDR-H3 structure  
-             Annotation - Sequnces, whose FREAD CDR-H3 structure prediction scores were above the quality threshold      
+   CDR-{H3,L3}_sequence - Sequence of CDR-{H3,L3} loop  
+                    ESS - FREAD score for the predicted CDR-{H3,L3} structure  
+             Annotation - Sequnces, whose FREAD CDR-{H3,L3} structure prediction scores were above the quality threshold      
                Clusters - CDR-{H3,L3} clusters (0.6A threshold)
 ```
