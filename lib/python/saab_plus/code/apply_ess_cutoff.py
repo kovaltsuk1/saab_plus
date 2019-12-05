@@ -4,33 +4,51 @@ import numpy as np
 from Common.Common import pdb_length_location, clusters
 from ast import literal_eval
 
+
 class ApplyESS:
-    
-    def __init__(self, filename):
+    chain_converter = {"H": 
+                         {"CDR3":"H3",
+                          "CDR1":"H1",
+                          "CDR2":"H2"},
+                       "L":
+                         {"CDR3":"L3",
+                          "CDR1":"L1",
+                          "CDR2":"L2"}
+                         }
+
+    def __init__(self, filename, chain ):
         """
         Applying ESS score thresholds to SAAB+ outputs
         -----------
         Parameters:
-            filename - name of the file that containg SAAB+ 
-                       annotated sequences
-            self.pdb_length - Dictionary of pdb_templates and
-                              their corresponding CDR-H3 lengths
+               filename - Name of the file that containg SAAB+ 
+                          annotated sequences
+                  chain - Chain information for BCR repertoire  
+        self.pdb_length - Dictionary of pdb_templates and
+                          their corresponding CDR-H3 lengths
         """
         self.filename = filename
+        self.chain = self.chain_converter[chain]["CDR3"]
+        self.CDR1 = self.chain_converter[chain]["CDR1"]
+        self.CDR2 = self.chain_converter[chain]["CDR2"]
+        self.CDR3_template = "CDR-{0}_template".format(self.chain)
+        self.CDR3_sequence = "CDR-{0}_sequence".format(self.chain) 
         self.pdb_length = self.load_pdb_length()
         if not os.path.isfile( self.filename ):
             raise AssertionError("File does not exist: ", self.filename)
         self.df = pd.read_csv( self.filename, sep = "\t", header = None,
-                                                          names=[ "Protein_Seq", "CDR-H3_template", 
+                                                          names=[ "Protein_Seq", self.CDR3_template, 
                                                                   "Canonical_classes", "Redundancy",
-                                                                  "Framework_template", "CDR-H3_sequence", 
+                                                                  "Framework_template", self.CDR3_sequence , 
                                                                    "ESS"])
         # Vectorized check_ess for speed
         self.check_ess_vf = np.vectorize( self.check_ess )
 
     def load_pdb_length(self):
         # Loading a mapping dictionary {"PDB: "amino acid length"}
-        df = pd.read_csv( pdb_length_location, sep = "\t", index_col = 0)
+        df = pd.read_csv( pdb_length_location[self.chain], 
+                          sep = "\t", 
+                          index_col = 0)
         return dict(df[["pdb", "Length"]].get_values())
 
     def check_ess(self, essScore, loop_length):
@@ -48,8 +66,8 @@ class ApplyESS:
 
     @property
     def adding_pdb_length(self):
-        self.df["PDB_length"] = self.df["CDR-H3_template"].apply( self.add_pdb_length )
-        self.df["CDRH3Length"] = self.df["CDR-H3_sequence"].apply( len )
+        self.df["PDB_length"] = self.df[self.CDR3_template].apply( self.add_pdb_length )
+        self.df["CDRH3Length"] = self.df[self.CDR3_sequence].apply( len )
         self.df["PDB_length"] = np.where( self.df["PDB_length"] == 0, self.df["CDRH3Length"],
                                                                       self.df["PDB_length"] )
         self.df.drop( columns = ["CDRH3Length"], inplace = True)
@@ -93,10 +111,16 @@ class ApplyESS:
             self.df["Clusters"] - Clusters column now contains information
                                   of clustered CDR-H3 templates.
         """
-        df_clusters = pd.read_csv( clusters, sep = "\t", index_col = 0).reset_index().rename(columns = { "clusters": "Clusters" })
-        self.df = self.df.merge( right = df_clusters, left_on = "CDR-H3_template", 
-                                                      right_on = "templates", how = "left").drop( columns = [ "templates" ] ) 
-        self.df["Clusters"].fillna("None", inplace = True) # CDR-H3 below the ESS will have None as Cluster name
+        df_clusters = pd.read_csv( clusters[self.chain], 
+                                   sep = "\t", 
+                                   index_col = 0).reset_index().rename(
+                                                                        columns = { "clusters": "Clusters" })
+        self.df = self.df.merge( right = df_clusters, 
+                                 left_on = self.CDR3_template, 
+                                 right_on = "templates", 
+                                 how = "left").drop( columns = [ "templates" ] ) 
+
+        self.df["Clusters"].fillna( "None", inplace = True) # CDR-H3 below the ESS will have None as Cluster name
         return self
 
     def expanding_canonical_class_dict(self):
@@ -106,10 +130,10 @@ class ApplyESS:
         two new columns: H1_Canonical_Class
                          H2_Canonical_Class
         """
-        self.df = pd.concat( [ self.df, self.df.apply(lambda x: pd.Series([ literal_eval(x["Canonical_classes"])["H1"], 
-                                                                            literal_eval(x["Canonical_classes"])["H2"] ], 
-                                                                            index = [ "H1_Canonical_Class", 
-                                                                                      "H2_Canonical_Class" ] ) , axis = 1 )],
+        self.df = pd.concat( [ self.df, self.df.apply(lambda x: pd.Series([ literal_eval(x["Canonical_classes"])[self.CDR1], 
+                                                                            literal_eval(x["Canonical_classes"])[self.CDR2] ], 
+                                                                            index = [ "{0}_Canonical_Class".format(self.CDR1), 
+                                                                                      "{0}_Canonical_Class".format(self.CDR2) ] ) , axis = 1 )],
                                                                                                                  axis  = 1 )
         self.df.drop( columns = [ "Canonical_classes" ], inplace = True) # Cleaning
 

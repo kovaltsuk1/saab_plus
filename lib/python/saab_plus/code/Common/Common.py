@@ -17,21 +17,36 @@ def random_filename():
 where_i_am = os.path.dirname(os.path.abspath(__file__))
 
 #Where the numbered_datasets are stored
-numbered_datasets_location = join(where_i_am,'../../data/numbered')
+numbered_datasets_location = {"H3": join(where_i_am,'../../data/numbered/sabdab/IMGT/CDRH3'),
+                              "L3": join(where_i_am,'../../data/numbered/sabdab/IMGT/CDRL3')
+                              }
 
-fread_db = join(where_i_am, "../../data/fread_db/db_CDRH3")
+fread_db = {"H3": join(where_i_am, "../../data/fread_db/db_CDRH3"),
+            "L3": join(where_i_am, "../../data/fread_db/db_CDRL3/") }
 
-template_db = join(where_i_am, "../../data/structures/IMGT/")
+template_db = {"H3": join(where_i_am, "../../data/structures/IMGT/CDRH3"),
+               "L3": join(where_i_am, "../../data/structures/IMGT/CDRL3")}
 
 #Where the structures of the PDBs are stored ( for FREAD comparisons.)
 #structures_location = join(where_i_am,'../../data/structures/IMGT')
 
+chain_id_converter = {"Heavy": "H3",
+                      "Light": "L3"}
+
+
 # pdb_length 
-pdb_length_location = join(where_i_am, '../../data/pdb_length/pdb_lengths.csv')
+pdb_length_location = {"H3": join(where_i_am, '../../data/pdb_length/CDRH3/pdb_lengths.csv'),
+                       "L3": join(where_i_am, '../../data/pdb_length/CDRL3/L3_pdb_lengths.csv')
+                       }
+
 
 # clustering file
 
-clusters = join(where_i_am, '../../data/pdb_length/clusters.csv')
+clusters = {"H3": join(where_i_am, '../../data/pdb_length/CDRH3/clusters.csv'),
+            "L3": join(where_i_am, '../../data/pdb_length/CDRL3/L3_clusters.csv')
+            }
+
+
 definitions = {		
 		
 		"chothia" : {"L1" : ["L24", "L25", "L26", "L27", "L28", "L29", "L30", "L31", "L32", "L33", "L34"], 

@@ -112,10 +112,11 @@ class Main(object):
         return [x for x in in_list if "*" not in x[0] and len(x[0]) < 152]
 
     def _open_dataframe(self):
-        self.df = pd.read_csv( self.input_file, sep = "\t",
-                                                iterator = True, 
-                                                chunksize = self.rate_of_analysis,
-                                                index_col = 0)
+        self.df = pd.read_csv( self.input_file, 
+                               sep = "\t",
+                               iterator = True, 
+                               chunksize = self.rate_of_analysis,
+                               index_col = 0)
 
     def split_anarci_outputs(self, output, inputs):
 

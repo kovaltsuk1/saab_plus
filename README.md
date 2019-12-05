@@ -3,7 +3,8 @@
 
 # Structural Annotation of BCR Repertoires
 SAAB+: annotation of BCR Repertoires with structural information, using separate tools
-to map non-CDR-H3 and CDR-H3 loop sequence to repersentative antibody structures.
+to map CDR loop sequences to repersentative antibody structures.  
+SAAB+ support analysis of both heavy and light chain BCR repertoire data.
 
 ## Getting Started
 Please follow instructions below to install SAAB+ pipeline on our machine
@@ -72,14 +73,14 @@ SAAB_PLUS -f Fasta_example.fa -n 20 -s human
 ### Interpreting SAAB+ outputs
 SAAB+ outputs a zipped tab-delimited text file.
 ```
-          Protein_Seq - Full antibody amino acid sequences. Only sequences that passed anarci structural viability assessment are retained.  
-      CDR-H3_template - CDR-H3 structure that was predicted by FREAD  
-   H1_Canonical_Class - SCALOP predicted CDR-H1 canonical class
-   H2_Canonical_Class - SCALOP predicted CDR-H2 canonical class
-           Redundancy - Number of Proiten_Seq copies in the input fasta file  
-   Framework_template - PDB structure that was used in CDR-H3 structure prediction  
-      CDR-H3_sequence - Sequence of CDR-H3 loop  
-                  ESS - FREAD score for the predicted CDR-H3 structure  
-           Annotation - Sequnces, whose FREAD CDR-H3 structure prediction scores were above the quality threshold      
-	     Clusters - CDR-H3 clusters (0.6A threshold)
+            Protein_Seq - Full antibody amino acid sequences. Only sequences that passed anarci structural viability assessment are retained.  
+   CDR-{H3,L3}_template - CDR-{H3,L3} structure that was predicted by FREAD  
+{H1,L1}_Canonical_Class - SCALOP predicted CDR-{H1,L1} canonical class
+{H2,L2}_Canonical_Class - SCALOP predicted CDR-{H2,L2} canonical class
+             Redundancy - Number of Proiten_Seq copies in the input fasta file  
+     Framework_template - PDB structure that was used in CDR-{H3,L3} structure prediction  
+   CDR-{H3,L3}_sequence - Sequence of CDR-H3 loop  
+                    ESS - FREAD score for the predicted CDR-H3 structure  
+             Annotation - Sequnces, whose FREAD CDR-H3 structure prediction scores were above the quality threshold      
+               Clusters - CDR-{H3,L3} clusters (0.6A threshold)
 ```

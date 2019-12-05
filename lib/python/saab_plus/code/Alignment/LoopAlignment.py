@@ -9,7 +9,8 @@ loop_starts = {'L1':26,'L2':55,'L3':104,'H1':26,'H2':55,'H3':104}
 
 #Get the CDR sequences from the numbered object.
 #Get the CDR sequences from the numbered object.
-def extract_cdrs(numbered):
+
+def extract_cdrs(numbered, cdr3_id = "H3"):
     """
     Function to extract cdrh3 sequence from
     anarci numbering
@@ -24,7 +25,7 @@ def extract_cdrs(numbered):
             aa = numbered[chid][0]
             if cdr_code not in cdrs:
                 cdrs[cdr_code] = ""
-            if cdr_code != "H3":
+            if cdr_code != cdr3_id:
                 cdrs[cdr_code]+=aa
             else:
                 if chid[0] < 112:
@@ -52,9 +53,9 @@ def perform_loop_alignment(loop, template_pdb, template_chain,
             return fread_cache[cache_key]
 
     #Template location.
-    template = os.path.join(template_db,"{0}{1}_no_cdrs.pdb".format(template_pdb, template_chain))
+    template = os.path.join(template_db[loop], "{0}{1}_no_cdrs.pdb".format(template_pdb, template_chain))
 
-    results = run_fread(fread_db, template, loop_starts[loop], sequence, template_chain,'')
+    results = run_fread(fread_db[loop], template, loop_starts[loop], sequence, template_chain, '')
 
     #Get the best matches.
     matches = []

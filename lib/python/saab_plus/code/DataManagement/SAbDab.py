@@ -5,8 +5,8 @@ import pickle
 import logging
 
 #This can be loaded in whole.
-def structural_reference():	
-    source = join(numbered_datasets_location,'sabdab',"IMGT")
+def structural_reference( chain ):	
+    source = numbered_datasets_location[chain]
     all_strucs = {}
     for chunk in listdir(source):
         logging.info("\tLoading Structures chunk: {0}".format(chunk))
